@@ -2,7 +2,7 @@
   "name": "metalsmith-markdown",
   "description": "A Metalsmith plugin to convert markdown files.",
   "repository": "git://github.com/segmentio/metalsmith-markdown.git",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "main": "lib/index.js",
   "dependencies": {
@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "mocha": "1.x",
-    "metalsmith": "0.0.0",
-    "assert-dir-equal": "0.0.1"
+    "metalsmith": "0.x",
+    "assert-dir-equal": "0.x"
   }
 }
