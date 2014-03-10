@@ -29,4 +29,15 @@ describe('metalsmith-markdown', function(){
         done();
       });
   });
+
+  it('should work without any options', function(done){
+    Metalsmith('test/fixtures/direct')
+      .use(markdown)
+      .build(function(err, files){
+        if (err) return done(err);
+        equal('test/fixtures/direct/expected', 'test/fixtures/direct/build');
+        done();
+      });
+  });
+
 });
