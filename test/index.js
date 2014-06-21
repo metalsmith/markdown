@@ -29,4 +29,24 @@ describe('metalsmith-markdown', function(){
         done();
       });
   });
+
+  it('should set the marker attribute if provided', function(done){
+    var sawAttribute = false;
+
+    Metalsmith('test/fixtures/basic')
+      .use(markdown({
+        markerAttribute: 'wasMarkdown'
+      }))
+      .use(function(files, metalsmith, done) {
+        Object.keys(files).forEach(function(file){
+          sawAttribute = files[file].wasMarkdown === true;
+        });
+        done();
+      })
+      .build(function(err){
+        if (err) return done(err);
+        assert(sawAttribute, 'Attribute was not set.');
+        done();
+      });
+  });
 });
