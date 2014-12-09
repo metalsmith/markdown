@@ -37,6 +37,27 @@ metalsmith.use(markdown({
 }));
 ```
 
+## The `keys` option
+
+If you'd like to use markdown in your frontmatter, just specify which keys
+you'd like to convert.
+
+```js
+metalsmith.use(markdown({
+  keys: ['text']
+}));
+```
+
+Now nothing stops you to use markdown in your frontmatter.
+
+```
+---
+custom: _a_
+---
+
+Body
+```
+
 ## License
 
   MIT
