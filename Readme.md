@@ -58,6 +58,32 @@ custom: _a_
 Body
 ```
 
+## The `useMetadata` option
+
+If you'd like to set file specific markdown options, you can achieve that
+with the `useMetadata` option set to `true`.
+
+```js
+metalsmith.use(markdown({
+  useMetadata: true
+}));
+```
+
+Now you can pass options to the markdown converter by specifying them
+in your frontmatter.
+
+```
+---
+gfm: false
+---
+
+~~Mistaken text.~~
+```
+
+Even options in your global metalsmith metadata will be passed to the
+markdown converter. This way you can specify specific markdown options
+for a subtree.
+
 ## License
 
   MIT
