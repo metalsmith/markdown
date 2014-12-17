@@ -29,11 +29,13 @@
 
 ```js
 var markdown = require('metalsmith-markdown');
+var highlighter = require('highlighter');
 
 metalsmith.use(markdown({
   smartypants: true,
   gfm: true,
-  tables: true
+  tables: true,
+  highlight: highlighter()
 }));
 ```
 
