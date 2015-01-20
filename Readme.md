@@ -37,6 +37,28 @@ metalsmith.use(markdown({
 }));
 ```
 
+  You can also use metalsmith-markdown's instance of marked, for example if you would like to supply a custom renderer.
+
+```js
+var markdown = require('metalsmith-markdown');
+var renderer = new markdown.marked.Renderer();
+
+renderer.heading = function (text, level) {
+  var escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
+
+  return '<h' + level + '><a name="' +
+                escapedText +
+                 '" class="anchor" href="#' +
+                 escapedText +
+                 '"><span class="header-link"></span></a>' +
+                  text + '</h' + level + '>';
+},
+
+metalsmith.use(markdown({
+  renderer: renderer
+}));
+```
+
 ## License
 
   MIT
