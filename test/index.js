@@ -29,4 +29,17 @@ describe('metalsmith-markdown', function(){
         done();
       });
   });
+
+  it('should allow a "useMetadata" option', function(done){
+    Metalsmith('test/fixtures/metadata')
+      .use(markdown({
+        useMetadata: true,
+        smartypants: true
+      }))
+      .build(function(err, files){
+        if (err) return done(err);
+        equal('test/fixtures/metadata/expected', 'test/fixtures/metadata/build');
+        done();
+      });
+  });
 });
