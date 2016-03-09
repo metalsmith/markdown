@@ -9,7 +9,7 @@
 
 ## CLI Usage
 
-  Install via npm and then add the `metalsmith-markdown` key to your `metalsmith.json` plugins with any [Marked](https://github.com/chjj/marked) options you want, like so:
+  Install via npm and then add the `metalsmith-markdown` key to your `metalsmith.json` plugins with any [kramed](https://github.com/GitbookIO/kramed) options you want, like so:
 
 ```json
 {
