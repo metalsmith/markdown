@@ -6,12 +6,15 @@
   "license": "MIT",
   "main": "lib/index.js",
   "dependencies": {
-    "marked": "~0.3.1",
+    "kramed": "~0.5.5",
     "debug": "~0.7.4"
   },
   "devDependencies": {
     "mocha": "1.x",
     "metalsmith": "0.x",
     "assert-dir-equal": "0.x"
+  },
+  "scripts": {
+    "test": "mocha test/index.js"
   }
 }
