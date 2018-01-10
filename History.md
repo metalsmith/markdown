@@ -1,4 +1,9 @@
 
+0.2.2 / 2018-01-09
+==================
+
+* update marked dependency to fix security issue
+
 0.2.1 - February 6, 2013
 ------------------------
 * add debug statements
