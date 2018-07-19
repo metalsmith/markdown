@@ -1,4 +1,5 @@
-# 1.0.0 / 2018-07-17
+# Latest
+## 1.0.0 / 2018-07-17
 
 * Fixed API
 * Upgraded to Marked 0.4.0 #31
@@ -9,6 +10,8 @@
 * Allow missing keys #9
 * Docs: Usage with highlighting lib #6
 * Updated all packages
+
+# Previous
 
 ## 0.2.2 / 2018-01-09
 
