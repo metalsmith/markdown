@@ -1,10 +1,10 @@
+# metalsmith-markdown
+
 [![npm version][npm-badge]][npm-url]
 [![code style: prettier][prettier-badge]][prettier-url]
 [![metalsmith: core plugin][metalsmith-badge]][metalsmith-url]
 
 [![Known Vulnerabilities][snyk-badge]][synk-url]
-
-# metalsmith-markdown
 
 A Metalsmith plugin to convert markdown files.
 
