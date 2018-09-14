@@ -7,7 +7,9 @@
   "main": "lib/index.js",
   "scripts": {
     "pretest": "eslint --fix .",
-    "test": "mocha test"
+    "test": "mocha test",
+    "preversion": "npm test",
+    "postversion": "git push && git push --tags && npm publish"
   },
   "dependencies": {
     "debug": "^4.0.1",
