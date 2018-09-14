@@ -10,7 +10,7 @@
     "test": "mocha test"
   },
   "dependencies": {
-    "debug": "^3.1.0",
+    "debug": "^4.0.1",
     "marked": "~0.4.0"
   },
   "devDependencies": {
