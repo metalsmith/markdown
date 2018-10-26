@@ -12,16 +12,16 @@
     "postversion": "git push && git push --tags && npm publish"
   },
   "dependencies": {
-    "debug": "^4.0.1",
-    "marked": "~0.4.0"
+    "debug": "^4.1.0",
+    "marked": "^0.5.1"
   },
   "devDependencies": {
     "assert-dir-equal": "^1.1.0",
-    "eslint": "^5.1.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-prettier": "^2.6.2",
+    "eslint": "^5.7.0",
+    "eslint-config-prettier": "^3.1.0",
+    "eslint-plugin-prettier": "^3.0.0",
     "metalsmith": "^2.3.0",
     "mocha": "^5.2.0",
-    "prettier": "^1.13.7"
+    "prettier": "^1.14.3"
   }
 }
