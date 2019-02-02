@@ -44,7 +44,6 @@ var markdown = require('metalsmith-markdown');
 var highlighter = require('highlighter');
 
 metalsmith.use(markdown({
-  renderer: new myMarked.Renderer(),
   highlight: function(code) {
     return require('highlight.js').highlightAuto(code).value;
   },
@@ -56,6 +55,30 @@ metalsmith.use(markdown({
   smartLists: true,
   smartypants: false,
   xhtml: false
+}));
+```
+
+## Custom Renderer
+
+  `metalsmith-markdown` uses `marked`, so to create a custom renderer get an instance of `marked.Renderer()`
+
+```js
+var markdown = require('metalsmith-markdown');
+var marked = require('marked');
+var markdownRenderer = new marked.Renderer();
+
+markdownRenderer.image = function (href, title, text) {
+return `
+  <figure>
+    <img src="${href}" alt="${title}" title="${title}" />
+    <figcaption>
+      <p>${text}</p>
+    </figcaption>
+  </figure>`;
+};
+
+metalsmith.use(markdown({
+  renderer: new myMarked.Renderer()
 }));
 ```
 
