@@ -78,7 +78,15 @@ return `
 };
 
 metalsmith.use(markdown({
-  renderer: new myMarked.Renderer()
+  renderer: markdownRenderer,
+  pedantic: false,
+  gfm: true,
+  tables: true,
+  breaks: false,
+  sanitize: false,
+  smartLists: true,
+  smartypants: false,
+  xhtml: false
 }));
 ```
 
