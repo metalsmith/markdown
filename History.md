@@ -1,8 +1,18 @@
 # Latest
 
-Check for [unreleased] changes.
+Check for [unreleased][] changes.
 
-## [1.2.0] - 2019-02-20
+## [1.3.0][] - 2019-10-30
+
+- Updated packages
+  - `marked` [v0.7.0](https://github.com/markedjs/marked/releases/tag/v0.7.0)
+  - `eslint`
+  - `eslint-config-prettier`
+  - `eslint-plugin-prettier`
+  - `mocha`
+  - `prettier`
+
+## [1.2.0][] - 2019-02-20
 
 - Docs updated
 - Updated packages
@@ -16,7 +26,7 @@ Check for [unreleased] changes.
 
 # Previous
 
-## [1.1.0] - 2018-10-26
+## [1.1.0][] - 2018-10-26
 
 - Updated packages
   - `debug`
@@ -26,13 +36,13 @@ Check for [unreleased] changes.
   - `eslint-plugin-prettier`
   - `prettier`
 
-## [1.0.1] - 2018-09-14
+## [1.0.1][] - 2018-09-14
 
 - Added Prettier and ESLint
 - Updated Badges
 - Updated `debug` package
 
-## [1.0.0] - 2018-07-17
+## [1.0.0][] - 2018-07-17
 
 - Fixed API
 - Upgraded to Marked 0.4.0 #31
@@ -44,19 +54,19 @@ Check for [unreleased] changes.
 - Docs: Usage with highlighting lib #6
 - Updated all packages
 
-## [0.2.2] - 2018-01-09
+## [0.2.2][] - 2018-01-09
 
 - update marked dependency to fix security issue
 
-## [0.2.1] - February 6, 2013
+## [0.2.1][] - February 6, 2013
 
 - add debug statements
 
-## [0.2.0] - February 5, 2013
+## [0.2.0][] - February 5, 2013
 
 - update to use buffers for metalsmith 0.1.0
 
-## [0.1.0] - February 5, 2013
+## [0.1.0][] - February 5, 2013
 
 - add `keys` option
 
@@ -69,6 +79,7 @@ Check for [unreleased] changes.
 ---
 
 [unreleased]: https://github.com/segmentio/metalsmith-markdown/compare/v1.2.0...HEAD
+[1.3.0]: https://github.com/segmentio/metalsmith-markdown/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/segmentio/metalsmith-markdown/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/segmentio/metalsmith-markdown/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/segmentio/metalsmith-markdown/compare/v1.0.0...v1.0.1
