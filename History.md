@@ -12,6 +12,8 @@ Check for [unreleased][] changes.
   - `mocha`
   - `prettier`
 
+# Previous
+
 ## [1.2.0][] - 2019-02-20
 
 - Docs updated
@@ -23,8 +25,6 @@ Check for [unreleased][] changes.
   - `eslint-plugin-prettier`
   - `mocha`
   - `prettier`
-
-# Previous
 
 ## [1.1.0][] - 2018-10-26
 
