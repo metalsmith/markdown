@@ -2,6 +2,8 @@
 
 Check for [unreleased][] changes.
 
+## [1.3.0][] - 2019-10-30
+
 - Updated packages
   - `marked` [v0.7.0](https://github.com/markedjs/marked/releases/tag/v0.7.0)
   - `eslint`
@@ -9,7 +11,6 @@ Check for [unreleased][] changes.
   - `eslint-plugin-prettier`
   - `mocha`
   - `prettier`
-
 
 ## [1.2.0][] - 2019-02-20
 
@@ -78,6 +79,7 @@ Check for [unreleased][] changes.
 ---
 
 [unreleased]: https://github.com/segmentio/metalsmith-markdown/compare/v1.2.0...HEAD
+[1.3.0]: https://github.com/segmentio/metalsmith-markdown/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/segmentio/metalsmith-markdown/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/segmentio/metalsmith-markdown/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/segmentio/metalsmith-markdown/compare/v1.0.0...v1.0.1
