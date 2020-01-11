@@ -89,6 +89,16 @@ metalsmith.use(markdown({
   xhtml: false
 }));
 ```
+## baseUrl options
+
+"addBaseUrl" and "basePrefix" may be used to control marked's baseUrl option. "addBaseUrl" sets baseUrl to the path of the current file. "basePrefix" adds a prefix if addBaseUrl is also set:
+
+```js
+    {
+    "addBaseUrl": true,
+    "basePrefix": "https://example.com/blog"
+    }
+```
 
 ## History
 
