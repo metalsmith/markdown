@@ -11,17 +11,17 @@ A Metalsmith plugin to convert markdown files.
 ## Installation
 
 ```bash
-$ npm install metalsmith-markdown
+$ npm install @metalsmith/markdown
 ```
 
 ## CLI Usage
 
-  Install via npm and then add the `metalsmith-markdown` key to your `metalsmith.json` plugins with any [Marked](https://github.com/markedjs/marked) options you want, like so:
+  Install via npm and then add the `@metalsmith/markdown` key to your `metalsmith.json` plugins with any [Marked](https://github.com/markedjs/marked) options you want, like so:
 
 ```json
 {
   "plugins": {
-    "metalsmith-markdown": {
+    "@metalsmith/markdown": {
       "pedantic": false,
       "gfm": true,
       "tables": true,
@@ -40,7 +40,7 @@ $ npm install metalsmith-markdown
   Pass `options` to the markdown plugin and pass it to Metalsmith with the `use` method:
 
 ```js
-var markdown = require('metalsmith-markdown');
+var markdown = require('@metalsmith/markdown');
 var highlighter = require('highlighter');
 
 metalsmith.use(markdown({
@@ -60,10 +60,10 @@ metalsmith.use(markdown({
 
 ## Custom Renderer
 
-  `metalsmith-markdown` uses `marked`, so to create a custom renderer get an instance of `marked.Renderer()`
+  `@metalsmith/markdown` uses `marked`, so to create a custom renderer get an instance of `marked.Renderer()`
 
 ```js
-var markdown = require('metalsmith-markdown');
+var markdown = require('@metalsmith/markdown');
 var marked = require('marked');
 var markdownRenderer = new marked.Renderer();
 
