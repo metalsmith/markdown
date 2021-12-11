@@ -1,6 +1,7 @@
 {
   "name": "@metalsmith/markdown",
-  "description": "A Metalsmith plugin to convert markdown files.",
+  "version": "1.3.0",
+  "description": "A Metalsmith plugin to render markdown files to HTML",
   "keywords": [
     "markdown",
     "metalsmith",
@@ -11,19 +12,29 @@
   "bugs": {
     "url": "https://github.com/metalsmith/markdown/issues"
   },
-  "author": "Ian Storm Taylor (https://ianstormtaylor.com)",
   "repository": {
     "type": "git",
     "url": "https://github.com/metalsmith/markdown.git"
   },
-  "version": "1.3.0",
   "license": "MIT",
+  "author": "Ian Storm Taylor (https://ianstormtaylor.com)",
   "main": "lib/index.js",
+  "files": [
+    "lib/*.js"
+  ],
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
   "scripts": {
-    "pretest": "eslint --fix .",
-    "test": "mocha test",
-    "preversion": "npm test",
-    "postversion": "git push && git push --tags && npm publish"
+    "changelog": "auto-changelog -u --sort-commits date --starting-date 2021-12-01 --commit-limit false --ignore-commit-pattern '(skip changelog|Release)'",
+    "coverage": "nyc report --reporter=text-lcov > ./coverage.info",
+    "coveralls": "npm run coverage && cat ./coverage.info | coveralls",
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "publish": "npm publish --access public",
+    "release": "release-it .",
+    "test": "nyc mocha"
   },
   "dependencies": {
     "debug": "^4.1.1",
@@ -31,17 +42,19 @@
   },
   "devDependencies": {
     "assert-dir-equal": "^1.1.0",
-    "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.5.0",
-    "eslint-plugin-prettier": "^3.1.1",
+    "coveralls": "^3.1.1",
+    "eslint": "^8.4.1",
+    "eslint-config-prettier": "^8.3.0",
     "metalsmith": "^2.3.0",
-    "mocha": "^6.2.2",
-    "prettier": "^1.18.2"
+    "mocha": "^7.2.0",
+    "nyc": "^15.1.0",
+    "prettier": "^2.5.1",
+    "release-it": "^14.11.8"
   },
-  "files": [
-    "lib/*.js"
-  ],
+  "peerDependencies": {
+    "metalsmith": "^2.3.0"
+  },
   "engines": {
-    "node": ">=6"
+    "node": ">=8.16.2"
   }
 }

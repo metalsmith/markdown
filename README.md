@@ -1,47 +1,28 @@
-# metalsmith-markdown
+# @metalsmith/markdown
 
-[![npm version][npm-badge]][npm-url]
-[![code style: prettier][prettier-badge]][prettier-url]
+A Metalsmith plugin to render markdown files to HTML, using [Marked](https://github.com/markedjs/marked).
+
 [![metalsmith: core plugin][metalsmith-badge]][metalsmith-url]
-
-[![Known Vulnerabilities][snyk-badge]][synk-url]
-
-A Metalsmith plugin to convert markdown files.
+[![npm: version][npm-badge]][npm-url]
+[![ci: build][ci-badge]][ci-url]
+[![code coverage][codecov-badge]][codecov-url]
+[![license: MIT][license-badge]][license-url]
 
 ## Installation
 
+NPM:
 ```bash
-$ npm install @metalsmith/markdown
+npm install @metalsmith/markdown
+```
+Yarn:
+```bash
+yarn add @metalsmith/markdown
 ```
 
-## CLI Usage
-
-  Install via npm and then add the `@metalsmith/markdown` key to your `metalsmith.json` plugins with any [Marked](https://github.com/markedjs/marked) options you want, like so:
-
-```json
-{
-  "plugins": {
-    "@metalsmith/markdown": {
-      "pedantic": false,
-      "gfm": true,
-      "tables": true,
-      "breaks": false,
-      "sanitize": false,
-      "smartLists": true,
-      "smartypants": false,
-      "xhtml": false
-    }
-  }
-}
-```
-
-## Javascript Usage
-
-  Pass `options` to the markdown plugin and pass it to Metalsmith with the `use` method:
+## Usage
 
 ```js
-var markdown = require('@metalsmith/markdown');
-var highlighter = require('highlighter');
+const markdown = require('@metalsmith/markdown');
 
 metalsmith.use(markdown({
   highlight: function(code) {
@@ -58,9 +39,28 @@ metalsmith.use(markdown({
 }));
 ```
 
-## Custom Renderer
+### Options
 
-  `@metalsmith/markdown` uses `marked`, so to create a custom renderer get an instance of `marked.Renderer()`
+`@metalsmith/markdown` is powered by [Marked](https://github.com/markedjs/marked), and you can pass any of the [Marked options](https://marked.js.org/using_advanced#options) to it, including the ['pro' options](https://marked.js.org/using_pro#extensions): `renderer`, `tokenizer`, `walkTokens` and `extensions`.
+
+Additionally, you can render markdown to HTML in file metadata keys by specifying the `keys` option:
+
+```js
+metalsmith.use(markdown({
+  keys: ['html_desc']
+}))
+```
+A file `article.md` with front-matter:
+```md
+---
+html_desc: A **markdown-enabled** _description_
+---
+```
+would transform `html_desc` to `A <b>markdown-enabled</b> <i>description</i>`.
+
+### Custom markdown rendering
+
+You can use a custom renderer by  of `marked.Renderer()`
 
 ```js
 var markdown = require('@metalsmith/markdown');
@@ -90,19 +90,38 @@ metalsmith.use(markdown({
 }));
 ```
 
-## History
+### CLI Usage
 
-[History](./History.md#Latest)
+Add `@metalsmith/markdown` key to your `metalsmith.json` plugins key
+
+```json
+{
+  "plugins": {
+    "@metalsmith/markdown": {
+      "pedantic": false,
+      "gfm": true,
+      "tables": true,
+      "breaks": false,
+      "sanitize": false,
+      "smartLists": true,
+      "smartypants": false,
+      "xhtml": false
+    }
+  }
+}
+```
 
 ## License
 
-MIT
+[MIT](LICENSE)
 
-[npm-badge]: https://img.shields.io/npm/v/metalsmith-markdown.svg
-[npm-url]: https://www.npmjs.com/package/metalsmith-markdown
-[prettier-badge]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg?longCache=true
-[prettier-url]: https://github.com/prettier/prettier
+[npm-badge]: https://img.shields.io/npm/v/@metalsmith/markdown.svg
+[npm-url]: https://www.npmjs.com/package/@metalsmith/markdown
+[ci-badge]: https://app.travis-ci.com/metalsmith/markdown.svg?branch=master
+[ci-url]: https://app.travis-ci.com/github/metalsmith/markdown
 [metalsmith-badge]: https://img.shields.io/badge/metalsmith-core_plugin-green.svg?longCache=true
-[metalsmith-url]: http://metalsmith.io
-[snyk-badge]: https://snyk.io/test/github/segmentio/metalsmith-markdown/badge.svg?targetFile=package.json
-[synk-url]: https://snyk.io/test/github/segmentio/metalsmith-markdown?targetFile=package.json
+[metalsmith-url]: https://metalsmith.io
+[codecov-badge]: https://img.shields.io/coveralls/github/metalsmith/markdown
+[codecov-url]: https://coveralls.io/github/metalsmith/markdown
+[license-badge]: https://img.shields.io/github/license/metalsmith/markdown
+[license-url]: LICENSE
