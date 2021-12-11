@@ -5,7 +5,7 @@ var equal = require('assert-dir-equal');
 var Metalsmith = require('metalsmith');
 var markdown = require('..');
 
-describe('metalsmith-markdown', function() {
+describe('@metalsmith/markdown', function() {
   it('should convert markdown files', function(done) {
     Metalsmith('test/fixtures/basic')
       .use(
