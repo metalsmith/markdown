@@ -11,10 +11,13 @@ A Metalsmith plugin to render markdown files to HTML, using [Marked](https://git
 ## Installation
 
 NPM:
+
 ```bash
 npm install @metalsmith/markdown
 ```
+
 Yarn:
+
 ```bash
 yarn add @metalsmith/markdown
 ```
@@ -22,21 +25,23 @@ yarn add @metalsmith/markdown
 ## Usage
 
 ```js
-const markdown = require('@metalsmith/markdown');
+const markdown = require('@metalsmith/markdown')
 
-metalsmith.use(markdown({
-  highlight: function(code) {
-    return require('highlight.js').highlightAuto(code).value;
-  },
-  pedantic: false,
-  gfm: true,
-  tables: true,
-  breaks: false,
-  sanitize: false,
-  smartLists: true,
-  smartypants: false,
-  xhtml: false
-}));
+metalsmith.use(
+  markdown({
+    highlight: function (code) {
+      return require('highlight.js').highlightAuto(code).value
+    },
+    pedantic: false,
+    gfm: true,
+    tables: true,
+    breaks: false,
+    sanitize: false,
+    smartLists: true,
+    smartypants: false,
+    xhtml: false
+  })
+)
 ```
 
 ### Options
@@ -46,48 +51,55 @@ metalsmith.use(markdown({
 Additionally, you can render markdown to HTML in file metadata keys by specifying the `keys` option:
 
 ```js
-metalsmith.use(markdown({
-  keys: ['html_desc']
-}))
+metalsmith.use(
+  markdown({
+    keys: ['html_desc']
+  })
+)
 ```
+
 A file `article.md` with front-matter:
+
 ```md
 ---
 html_desc: A **markdown-enabled** _description_
 ---
 ```
+
 would transform `html_desc` to `A <b>markdown-enabled</b> <i>description</i>`.
 
 ### Custom markdown rendering
 
-You can use a custom renderer by  of `marked.Renderer()`
+You can use a custom renderer by of `marked.Renderer()`
 
 ```js
-var markdown = require('@metalsmith/markdown');
-var marked = require('marked');
-var markdownRenderer = new marked.Renderer();
+const markdown = require('@metalsmith/markdown')
+const marked = require('marked')
+const markdownRenderer = new marked.Renderer()
 
 markdownRenderer.image = function (href, title, text) {
-return `
+  return `
   <figure>
     <img src="${href}" alt="${title}" title="${title}" />
     <figcaption>
       <p>${text}</p>
     </figcaption>
-  </figure>`;
-};
+  </figure>`
+}
 
-metalsmith.use(markdown({
-  renderer: markdownRenderer,
-  pedantic: false,
-  gfm: true,
-  tables: true,
-  breaks: false,
-  sanitize: false,
-  smartLists: true,
-  smartypants: false,
-  xhtml: false
-}));
+metalsmith.use(
+  markdown({
+    renderer: markdownRenderer,
+    pedantic: false,
+    gfm: true,
+    tables: true,
+    breaks: false,
+    sanitize: false,
+    smartLists: true,
+    smartypants: false,
+    xhtml: false
+  })
+)
 ```
 
 ### CLI Usage

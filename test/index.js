@@ -1,26 +1,25 @@
-/* eslint-env mocha */
+const assert = require('assert')
+const equal = require('assert-dir-equal')
+const Metalsmith = require('metalsmith')
+const { describe, it } = require('mocha')
+const markdown = require('..')
 
-var assert = require('assert');
-var equal = require('assert-dir-equal');
-var Metalsmith = require('metalsmith');
-var markdown = require('..');
-
-describe('@metalsmith/markdown', function() {
-  it('should convert markdown files', function(done) {
+describe('@metalsmith/markdown', function () {
+  it('should convert markdown files', function (done) {
     Metalsmith('test/fixtures/basic')
       .use(
         markdown({
           smartypants: true
         })
       )
-      .build(function(err) {
-        if (err) return done(err);
-        equal('test/fixtures/basic/expected', 'test/fixtures/basic/build');
-        done();
-      });
-  });
+      .build(function (err) {
+        if (err) return done(err)
+        equal('test/fixtures/basic/expected', 'test/fixtures/basic/build')
+        done()
+      })
+  })
 
-  it('should allow a "keys" option', function(done) {
+  it('should allow a "keys" option', function (done) {
     Metalsmith('test/fixtures/keys')
       .use(
         markdown({
@@ -28,10 +27,10 @@ describe('@metalsmith/markdown', function() {
           smartypants: true
         })
       )
-      .build(function(err, files) {
-        if (err) return done(err);
-        assert.equal('<p><em>a</em></p>\n', files['index.html'].custom);
-        done();
-      });
-  });
-});
+      .build(function (err, files) {
+        if (err) return done(err)
+        assert.equal('<p><em>a</em></p>\n', files['index.html'].custom)
+        done()
+      })
+  })
+})
