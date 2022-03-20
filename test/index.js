@@ -2,9 +2,29 @@ const assert = require('assert')
 const equal = require('assert-dir-equal')
 const Metalsmith = require('metalsmith')
 const { describe, it } = require('mocha')
+const { name } = require('../package.json')
 const markdown = require('..')
 
 describe('@metalsmith/markdown', function () {
+  it('should export a named plugin function matching package.json name', function () {
+    const namechars = name.split('/')[1]
+    const camelCased = namechars.split('').reduce((str, char, i) => {
+      str += namechars[i - 1] === '-' ? char.toUpperCase() : char === '-' ? '' : char
+      return str
+    }, '')
+    assert.strictEqual(markdown().name, camelCased)
+  })
+
+  it('should not crash the metalsmith build when using default options', function (done) {
+    Metalsmith('test/fixtures/default')
+      .use(markdown())
+      .build((err) => {
+        assert.strictEqual(err, null)
+        equal('test/fixtures/default/build', 'test/fixtures/default/expected')
+        done()
+      })
+  })
+
   it('should convert markdown files', function (done) {
     Metalsmith('test/fixtures/basic')
       .use(
