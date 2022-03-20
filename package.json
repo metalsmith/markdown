@@ -41,7 +41,7 @@
     "test": "nyc mocha"
   },
   "dependencies": {
-    "debug": "^4.3.3",
+    "debug": "^4.3.4",
     "marked": "^4.0.12"
   },
   "devDependencies": {
