@@ -129,8 +129,8 @@ Add `@metalsmith/markdown` key to your `metalsmith.json` plugins key
 
 [npm-badge]: https://img.shields.io/npm/v/@metalsmith/markdown.svg
 [npm-url]: https://www.npmjs.com/package/@metalsmith/markdown
-[ci-badge]: https://app.travis-ci.com/metalsmith/markdown.svg?branch=master
-[ci-url]: https://app.travis-ci.com/github/metalsmith/markdown
+[ci-badge]: https://github.com/metalsmith/markdown/actions/workflows/test.yml/badge.svg
+[ci-url]: https://github.com/metalsmith/markdown/actions/workflows/test.yml
 [metalsmith-badge]: https://img.shields.io/badge/metalsmith-core_plugin-green.svg?longCache=true
 [metalsmith-url]: https://metalsmith.io
 [codecov-badge]: https://img.shields.io/coveralls/github/metalsmith/markdown
