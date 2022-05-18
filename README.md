@@ -53,7 +53,7 @@ Additionally, you can render markdown to HTML in file metadata keys by specifyin
 ```js
 metalsmith.use(
   markdown({
-    keys: ['html_desc']
+    keys: ['html_desc', 'nested.data']
   })
 )
 ```
@@ -63,10 +63,20 @@ A file `article.md` with front-matter:
 ```md
 ---
 html_desc: A **markdown-enabled** _description_
+nested:
+  data: '#metalsmith'
 ---
 ```
 
-would transform `html_desc` to `A <b>markdown-enabled</b> <i>description</i>`.
+would transform `html_desc` to
+
+```json
+{
+  "html_desc": "A <strong>markdown-enabled</strong> <em>description</em>\n",
+  "nested": {
+    "data": "<h1 id=\"metalsmith\">metalsmith</h1>\n"
+  }
+```
 
 ### Custom markdown rendering
 

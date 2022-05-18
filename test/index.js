@@ -53,4 +53,19 @@ describe('@metalsmith/markdown', function () {
         done()
       })
   })
+
+  it('should parse nested key paths', function (done) {
+    Metalsmith('test/fixtures/nested-keys')
+      .use(
+        markdown({
+          keys: ['custom', 'nested.key.path'],
+          smartypants: true
+        })
+      )
+      .build(function (err, files) {
+        if (err) return done(err)
+        assert.equal('<h1 id="hello">Hello</h1>\n', files['index.html'].nested.key.path)
+        done()
+      })
+  })
 })
