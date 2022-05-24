@@ -5,6 +5,7 @@ const { describe, it } = require('mocha')
 const { name } = require('../package.json')
 const markdown = require('..')
 const expandWildcardKeypath = require('../lib/expand-wildcard-keypath')
+const path = require('path')
 
 describe('@metalsmith/markdown', function () {
   it('should export a named plugin function matching package.json name', function () {
@@ -27,9 +28,10 @@ describe('@metalsmith/markdown', function () {
   })
 
   it('should treat "true" option as default', function (done) {
+    const filePath = path.join('subfolder', 'index.html')
     function getFiles() {
       return {
-        'subfolder/index.md': {
+        [path.join('subfolder', 'index.md')]: {
           contents: Buffer.from('"hello"')
         }
       }
@@ -54,17 +56,15 @@ describe('@metalsmith/markdown', function () {
           resolve(files)
         })
       })
-    ]).then(([defaultsTrue, defaults, smartypants]) => {
-      assert.strictEqual(
-        defaults['subfolder/index.html'].contents.toString(),
-        defaultsTrue['subfolder/index.html'].contents.toString()
-      )
-      assert.notDeepStrictEqual(
-        defaultsTrue['subfolder/index.html'].contents.toString(),
-        smartypants['subfolder/index.html'].contents.toString()
-      )
-      done()
-    })
+    ])
+      .then(([defaultsTrue, defaults, smartypants]) => {
+        assert.strictEqual(defaults[filePath].contents.toString(), defaultsTrue[filePath].contents.toString())
+        assert.notDeepStrictEqual(defaultsTrue[filePath].contents.toString(), smartypants[filePath].contents.toString())
+        done()
+      })
+      .catch((err) => {
+        done(err)
+      })
   })
 
   it('should convert markdown files', function (done) {
