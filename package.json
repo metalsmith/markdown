@@ -30,7 +30,7 @@
     "test": "test"
   },
   "scripts": {
-    "changelog": "auto-changelog -u --sort-commits date --starting-date 2021-12-01 --commit-limit false --ignore-commit-pattern '(skip changelog|Release)'",
+    "changelog": "auto-changelog -u --sort-commits date --starting-version v1.4.0 --commit-limit false --ignore-commit-pattern '((dev|chore|ci):|skip (changelog|travis)|Release)'",
     "coverage": "nyc report --reporter=text-lcov > ./coverage.info",
     "format": "prettier --write \"**/*.{yml,md,js,json}\"",
     "format:check": "prettier --list-different \"**/*.{yml,md,js,json}\"",
