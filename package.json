@@ -36,7 +36,6 @@
     "format:check": "prettier --list-different \"**/*.{yml,md,js,json}\"",
     "lint": "eslint --fix .",
     "lint:check": "eslint --fix-dry-run .",
-    "publish": "npm publish --access public",
     "release": "release-it .",
     "test": "nyc mocha"
   },
@@ -59,6 +58,9 @@
   },
   "peerDependencies": {
     "metalsmith": "^2.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "engines": {
     "node": ">=12"
