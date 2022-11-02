@@ -1,7 +1,8 @@
+/* eslint-env node, mocha */
+
 const assert = require('assert')
 const equal = require('assert-dir-equal')
 const Metalsmith = require('metalsmith')
-const { describe, it } = require('mocha')
 const { name } = require('../package.json')
 const markdown = require('..')
 const expandWildcardKeypath = require('../lib/expand-wildcard-keypath')
@@ -19,6 +20,7 @@ describe('@metalsmith/markdown', function () {
 
   it('should not crash the metalsmith build when using default options', function (done) {
     Metalsmith('test/fixtures/default')
+      .env('DEBUG', process.env.DEBUG)
       .use(markdown())
       .build((err) => {
         assert.strictEqual(err, null)
@@ -40,19 +42,19 @@ describe('@metalsmith/markdown', function () {
     Promise.all([
       new Promise((resolve) => {
         const files = getFiles()
-        markdown(true)(files, {}, () => {
+        markdown(true)(files, Metalsmith(__dirname), () => {
           resolve(files)
         })
       }),
       new Promise((resolve) => {
         const files = getFiles()
-        markdown()(files, {}, () => {
+        markdown()(files, Metalsmith(__dirname), () => {
           resolve(files)
         })
       }),
       new Promise((resolve) => {
         const files = getFiles()
-        markdown({ smartypants: true })(files, {}, () => {
+        markdown({ smartypants: true })(files, Metalsmith(__dirname), () => {
           resolve(files)
         })
       })
@@ -69,6 +71,7 @@ describe('@metalsmith/markdown', function () {
 
   it('should convert markdown files', function (done) {
     Metalsmith('test/fixtures/basic')
+      .env('DEBUG', process.env.DEBUG)
       .use(
         markdown({
           smartypants: true
@@ -83,7 +86,7 @@ describe('@metalsmith/markdown', function () {
 
   it('should skip non-markdown files', function (done) {
     const files = { 'index.css': {} }
-    markdown(true)(files, {}, () => {
+    markdown(true)(files, Metalsmith(__dirname), () => {
       assert.deepStrictEqual(files, { 'index.css': {} })
       done()
     })
@@ -91,6 +94,7 @@ describe('@metalsmith/markdown', function () {
 
   it('should allow a "keys" option', function (done) {
     Metalsmith('test/fixtures/keys')
+      .env('DEBUG', process.env.DEBUG)
       .use(
         markdown({
           keys: ['custom'],
@@ -106,6 +110,7 @@ describe('@metalsmith/markdown', function () {
 
   it('should parse nested key paths', function (done) {
     Metalsmith('test/fixtures/nested-keys')
+      .env('DEBUG', process.env.DEBUG)
       .use(
         markdown({
           keys: ['custom', 'nested.key.path'],
@@ -139,6 +144,7 @@ describe('@metalsmith/markdown', function () {
 
   it('should recognize a keys option loop placeholder', function (done) {
     Metalsmith('test/fixtures/array-index-keys')
+      .env('DEBUG', process.env.DEBUG)
       .use(
         markdown({
           keys: ['arr.*', 'objarr.*.prop', 'wildcard.faq.*.*', 'wildcard.titles.*'],
