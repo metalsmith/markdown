@@ -52,14 +52,14 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
-    "metalsmith": "^2.4.3",
+    "metalsmith": "^2.5.0",
     "mocha": "^9.2.2",
     "nyc": "^15.1.0",
     "prettier": "^2.7.1",
     "release-it": "^15.5.0"
   },
   "peerDependencies": {
-    "metalsmith": "^2.3.0"
+    "metalsmith": "^2.5.0"
   },
   "publishConfig": {
     "access": "public"
