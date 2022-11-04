@@ -21,7 +21,14 @@
   "maintainers": [
     "Kevin Van Lierde (https://webketje.com)"
   ],
-  "main": "lib/index.js",
+  "source": "src/index.js",
+  "main": "lib/index.cjs",
+  "module": "lib/index.js",
+  "exports": {
+    "import": "./lib/index.js",
+    "require": "./lib/index.cjs"
+  },
+  "type": "module",
   "files": [
     "lib/*.js"
   ],
@@ -36,8 +43,10 @@
     "format:check": "prettier --list-different \"**/*.{yml,md,js,json}\"",
     "lint": "eslint --fix .",
     "lint:check": "eslint --fix-dry-run .",
-    "release": "release-it .",
-    "test": "nyc mocha"
+    "release": "npm run build && release-it .",
+    "build": "microbundle --target node --no-sourcemap -f cjs,esm",
+    "test": "nyc mocha",
+    "pretest": "npm run build"
   },
   "dependencies": {
     "dlv": "^1.1.3",
@@ -52,6 +61,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
     "metalsmith": "^2.5.0",
+    "microbundle": "^0.15.1",
     "mocha": "^9.2.2",
     "nyc": "^15.1.0",
     "prettier": "^2.7.1",
@@ -64,6 +74,6 @@
     "access": "public"
   },
   "engines": {
-    "node": ">=12"
+    "node": ">=12.17.0 <13.0.0-0||>=13.2.0"
   }
 }

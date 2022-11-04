@@ -25,7 +25,7 @@ yarn add @metalsmith/markdown
 ## Usage
 
 ```js
-const markdown = require('@metalsmith/markdown')
+import markdown from '@metalsmith/markdown'
 
 metalsmith.use(
   markdown({
@@ -111,8 +111,8 @@ would be transformed into:
 You can use a custom renderer by using `marked.Renderer()`
 
 ```js
-const markdown = require('@metalsmith/markdown')
-const marked = require('marked')
+import markdown from '@metalsmith/markdown'
+import { marked } from 'marked'
 const markdownRenderer = new marked.Renderer()
 
 markdownRenderer.image = function (href, title, text) {

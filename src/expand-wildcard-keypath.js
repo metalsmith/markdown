@@ -1,4 +1,4 @@
-const get = require('dlv')
+import get from 'dlv'
 
 function error(name, msg) {
   const err = new Error(msg)
@@ -63,4 +63,4 @@ function expandWildcardKeypath(root, keypaths, char) {
   return expanded
 }
 
-module.exports = expandWildcardKeypath
+export default expandWildcardKeypath

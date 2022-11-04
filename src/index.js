@@ -1,8 +1,8 @@
-const { basename, dirname, extname, join } = require('path')
-const get = require('dlv')
-const set = require('dset').dset
-const { marked } = require('marked')
-const expandWildcardKeypaths = require('./expand-wildcard-keypath')
+import { basename, dirname, extname, join } from 'path'
+import get from 'dlv'
+import { dset as set } from 'dset'
+import { marked } from 'marked'
+import expandWildcardKeypaths from './expand-wildcard-keypath.js'
 
 function render(data, key, options) {
   const value = get(data, key)
@@ -72,4 +72,4 @@ function initMarkdown(options = defaultOptions) {
   }
 }
 
-module.exports = initMarkdown
+export default initMarkdown

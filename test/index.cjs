@@ -5,7 +5,7 @@ const equal = require('assert-dir-equal')
 const Metalsmith = require('metalsmith')
 const { name } = require('../package.json')
 const markdown = require('..')
-const expandWildcardKeypath = require('../lib/expand-wildcard-keypath')
+let expandWildcardKeypath
 const path = require('path')
 
 function msCommon(dir) {
@@ -13,6 +13,12 @@ function msCommon(dir) {
 }
 
 describe('@metalsmith/markdown', function () {
+  before(function (done) {
+    import('../src/expand-wildcard-keypath.js').then(imported => {
+      expandWildcardKeypath = imported
+      done()
+    }) 
+  })
   it('should export a named plugin function matching package.json name', function () {
     const namechars = name.split('/')[1]
     const camelCased = namechars.split('').reduce((str, char, i) => {
