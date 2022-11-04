@@ -4,6 +4,7 @@ const assert = require('assert')
 const equal = require('assert-dir-equal')
 const Metalsmith = require('metalsmith')
 const { name } = require('../package.json')
+/* eslint-disable-next-line n/no-missing-require */
 const markdown = require('..')
 let expandWildcardKeypath
 const path = require('path')
@@ -15,7 +16,7 @@ function msCommon(dir) {
 describe('@metalsmith/markdown', function () {
   before(function (done) {
     import('../src/expand-wildcard-keypath.js').then(imported => {
-      expandWildcardKeypath = imported
+      expandWildcardKeypath = imported.default
       done()
     }) 
   })

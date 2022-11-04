@@ -29,6 +29,7 @@
     "require": "./lib/index.cjs"
   },
   "type": "module",
+  "types": "lib/index.d.ts",
   "files": [
     "lib/*.js"
   ],
@@ -44,7 +45,7 @@
     "lint": "eslint --fix .",
     "lint:check": "eslint --fix-dry-run .",
     "release": "npm run build && release-it .",
-    "build": "microbundle --target node --no-sourcemap -f cjs,esm",
+    "build": "microbundle --target node --no-sourcemap -f cjs,esm --generateTypes=false",
     "test": "nyc mocha",
     "pretest": "npm run build"
   },

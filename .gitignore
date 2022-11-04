@@ -5,5 +5,5 @@ npm-debug.log*
 .nyc_output
 coverage.info
 test/fixtures/*/build
-lib
+lib/*.*js
 node_modules
