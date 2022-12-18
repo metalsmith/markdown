@@ -15,11 +15,13 @@ function render(data, key, options) {
  * @typedef Options
  * @property {string[]} [keys] - Key names of file metadata to render to HTML - can be nested
  * @property {boolean} [wildcard=false] - Expand `*` wildcards in keypaths
+ * @property {Object} [engineOptions] Options to pass to the markdown engine (default [marked](https://github.com/markedjs/marked))
  **/
 
 const defaultOptions = {
   keys: [],
-  wildcard: false
+  wildcard: false,
+  engineOptions: {}
 }
 
 /**
@@ -40,6 +42,15 @@ function markdown(options = defaultOptions) {
     const debug = metalsmith.debug('@metalsmith/markdown')
     const matches = metalsmith.match('**/*.{md,markdown}', Object.keys(files))
 
+    const legacyEngineOptions = Object.keys(options).filter((opt) => !Object.keys(defaultOptions).includes(opt))
+    if (legacyEngineOptions.length) {
+      debug.warn('Starting from version 2.0 marked engine options will need to be specified as options.engineOptions')
+      legacyEngineOptions.forEach((opt) => {
+        options.engineOptions[opt] = options[opt]
+      })
+      debug.warn('Moved engine options %s to options.engineOptions', legacyEngineOptions.join(', '))
+    }
+
     debug('Running with options: %O', options)
     if (matches.length === 0) {
       debug.warn('No markdown files found.')
@@ -54,7 +65,7 @@ function markdown(options = defaultOptions) {
       if ('.' != dir) html = join(dir, html)
 
       debug.info('Rendering file "%s" as "%s"', file, html)
-      const str = marked(data.contents.toString(), options)
+      const str = marked(data.contents.toString(), options.engineOptions)
       data.contents = Buffer.from(str)
 
       let keys = options.keys
@@ -63,7 +74,7 @@ function markdown(options = defaultOptions) {
       }
       keys.forEach((k) => {
         debug.info('Rendering key "%s" of file "%s"', k.join ? k.join('.') : k, file)
-        render(data, k, options)
+        render(data, k, options.engineOptions)
       })
 
       delete files[file]

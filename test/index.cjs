@@ -131,6 +131,40 @@ describe('@metalsmith/markdown', function () {
       })
   })
 
+  it('< v2.0.0 should move legacy engine options in object root to options.engineOptions', done => {
+    const ms = msCommon('test/fixtures/basic')
+    const output = []
+    const Debugger = (...args) => { output.push(['log', ...args])}
+    Object.assign(Debugger, {
+      info: (...args) => { output.push(['info', ...args]) },
+      warn: (...args) => { output.push(['warn', ...args]) },
+      error: (...args) => { output.push(['error', ...args]) }
+    })
+
+    ms
+      .use(() => {
+        ms.debug = () => Debugger
+      })
+      .use(markdown({
+        gfm: true,
+        smartypants: false,
+        engineOptions: {}
+      }))
+      .process((err) => {
+        if (err) done(err)
+        try  {
+          assert.deepStrictEqual(output.slice(0,2), [
+            ['warn', 'Starting from version 2.0 marked engine options will need to be specified as options.engineOptions'],
+            ['warn', 'Moved engine options %s to options.engineOptions', 'gfm, smartypants']
+          ])
+          done()
+        } catch (err) {
+          done(err)
+        }
+      })
+
+  })
+
   it('expandWildCardKeyPath should throw if root is not an object', function () {
     try {
       expandWildcardKeypath(null, [], '*')
