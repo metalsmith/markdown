@@ -27,7 +27,7 @@ const defaultOptions = {
  * @param {Options} [options]
  * @return {import('metalsmith').Plugin}
  */
-function initMarkdown(options = defaultOptions) {
+function markdown(options = defaultOptions) {
   if (options === true) {
     options = defaultOptions
   } else {
@@ -72,4 +72,4 @@ function initMarkdown(options = defaultOptions) {
   }
 }
 
-export default initMarkdown
+export default markdown

@@ -1,7 +1,7 @@
 import { marked } from 'marked';
 import Metalsmith from 'metalsmith';
 
-export default initMarkdown;
+export default markdown;
 export interface Options extends marked.MarkedOptions {
     /**
      * - Key names of file metadata to render to HTML - can be nested
@@ -14,7 +14,5 @@ export interface Options extends marked.MarkedOptions {
 };
 /**
  * A Metalsmith plugin to render markdown files to HTML
- * @param {Options} [options]
- * @return {import('metalsmith').Plugin}
  */
-declare function initMarkdown(options?: Options): Metalsmith.Plugin;
+declare function markdown(options?: Options): Metalsmith.Plugin;
