@@ -1,12 +1,18 @@
 # @metalsmith/markdown
 
-A Metalsmith plugin to render markdown files to HTML, using [Marked](https://github.com/markedjs/marked).
+A Metalsmith plugin to render markdown files to HTML, using [Marked](https://github.com/markedjs/marked) (by default).
 
 [![metalsmith: core plugin][metalsmith-badge]][metalsmith-url]
 [![npm: version][npm-badge]][npm-url]
 [![ci: build][ci-badge]][ci-url]
 [![code coverage][codecov-badge]][codecov-url]
 [![license: MIT][license-badge]][license-url]
+
+## Features
+
+- Compiles `.md` and `.markdown` files in `metalsmith.source()` to HTML.
+- Enables rendering file metadata keys to HTML through the [keys option](#rendering-file-metadata)
+- Supports using the markdown library of your choice through the [render option](#using-another-markdown-library)
 
 ## Installation
 
@@ -24,29 +30,50 @@ yarn add @metalsmith/markdown
 
 ## Usage
 
+`@metalsmith/markdown` is powered by [Marked](https://github.com/markedjs/marked) (by default), and you can pass any of the [Marked options](https://marked.js.org/using_advanced#options) to it, including the ['pro' options](https://marked.js.org/using_pro#extensions): `renderer`, `tokenizer`, `walkTokens` and `extensions`.
+
 ```js
 import markdown from '@metalsmith/markdown'
+import hljs from 'highlight.js'
 
+// use defaults
+metalsmith.use(markdown())
+
+// use explicit defaults
+metalsmith.use({
+  wildcard: false,
+  keys: [],
+  engineOptions: {}
+})
+
+// custom
 metalsmith.use(
   markdown({
-    highlight: function (code) {
-      return require('highlight.js').highlightAuto(code).value
-    },
-    pedantic: false,
-    gfm: true,
-    tables: true,
-    breaks: false,
-    sanitize: false,
-    smartLists: true,
-    smartypants: false,
-    xhtml: false
+    engineOptions: {
+      highlight: function (code) {
+        return hljs.highlightAuto(code).value
+      },
+      pedantic: false,
+      gfm: true,
+      tables: true,
+      breaks: false,
+      sanitize: false,
+      smartLists: true,
+      smartypants: false,
+      xhtml: false
+    }
   })
 )
 ```
 
-### Options
+`@metalsmith/markdown` provides the following options:
 
-`@metalsmith/markdown` is powered by [Marked](https://github.com/markedjs/marked), and you can pass any of the [Marked options](https://marked.js.org/using_advanced#options) to it, including the ['pro' options](https://marked.js.org/using_pro#extensions): `renderer`, `tokenizer`, `walkTokens` and `extensions`.
+- `keys`: Key names of file metadata to render to HTML in addition to its `contents` - can be nested key paths
+- `wildcard` _(default: `false`)_ - Expand `*` wildcards in `keys` option keypaths
+- `render` - Specify a custom render function with the signature `(source, engineOptions, context) => string`. `context` is an object with the signature `{ path:string, key:string }` where the `path` key contains the current file path, and `key` contains the target metadata key.
+- `engineOptions` Options to pass to the markdown engine (default [marked](https://github.com/markedjs/marked))
+
+### Rendering file metadata
 
 You can render markdown to HTML in file metadata keys by specifying the `keys` option.  
 The `keys` option also supports dot-delimited key-paths.
@@ -95,9 +122,10 @@ would be transformed into:
     "data": "<h1 id=\"metalsmith\">metalsmith</h1>\n"
   },
   "faq": [
-    { "q": "<p><strong>Question1?</strong></p>\n", "a": "<p><em>answer1</em></p>\n"},
-    { "q": "<p><strong>Question2?</strong></p>\n", "a": "<p><em>answer2</em></p>\n"}
-  ],
+    { "q": "<p><strong>Question1?</strong></p>\n", "a": "<p><em>answer1</em></p>\n" },
+    { "q": "<p><strong>Question2?</strong></p>\n", "a": "<p><em>answer2</em></p>\n" }
+  ]
+}
 ```
 
 **Notes about the wildcard**
@@ -127,17 +155,46 @@ markdownRenderer.image = function (href, title, text) {
 
 metalsmith.use(
   markdown({
-    renderer: markdownRenderer,
-    pedantic: false,
-    gfm: true,
-    tables: true,
-    breaks: false,
-    sanitize: false,
-    smartLists: true,
-    smartypants: false,
-    xhtml: false
+    engineOptions: {
+      renderer: markdownRenderer,
+      pedantic: false,
+      gfm: true,
+      tables: true,
+      breaks: false,
+      sanitize: false,
+      smartLists: true,
+      smartypants: false,
+      xhtml: false
+    }
   })
 )
+```
+
+### Using another markdown library
+
+If you don't want to use marked, you can use another markdown rendering library through the `render` option. For example, this is how you could use [markdown-it](https://github.com/markdown-it/markdown-it) instead:
+
+```js
+import MarkdownIt from 'markdown-it'
+
+let markdownIt
+metalsmith.use(markdown({
+  render(source, opts, context) {
+    if (!markdownIt) markdownIt = new MarkdownIt(opts)
+    if (context.key == 'contents') return mdIt.render(source)
+    return markdownIt.renderInline(source)
+  },
+  // specify markdownIt options here
+  engineOptions: { ... }
+}))
+```
+
+### Debug
+
+To enable debug logs, set the `DEBUG` environment variable to `@metalsmith/markdown*`:
+
+```
+metalsmith.env('DEBUG', '@metalsmith/markdown*')
 ```
 
 ### CLI Usage
@@ -148,14 +205,16 @@ Add `@metalsmith/markdown` key to your `metalsmith.json` plugins key
 {
   "plugins": {
     "@metalsmith/markdown": {
-      "pedantic": false,
-      "gfm": true,
-      "tables": true,
-      "breaks": false,
-      "sanitize": false,
-      "smartLists": true,
-      "smartypants": false,
-      "xhtml": false
+      "engineOptions": {
+        "pedantic": false,
+        "gfm": true,
+        "tables": true,
+        "breaks": false,
+        "sanitize": false,
+        "smartLists": true,
+        "smartypants": false,
+        "xhtml": false
+      }
     }
   }
 }
