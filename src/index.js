@@ -4,23 +4,30 @@ import { dset as set } from 'dset'
 import { marked } from 'marked'
 import expandWildcardKeypaths from './expand-wildcard-keypath.js'
 
-function render(data, key, options) {
-  const value = get(data, key)
-  if (typeof value === 'string') {
-    set(data, key, marked(value, options))
-  }
+function defaultRender(source, options) {
+  return marked(source, options)
 }
+
+/**
+ * @callback Render
+ * @param {string} source
+ * @param {Object} engineOptions
+ * @param {{ path: string, key: string}} context
+ */
 
 /**
  * @typedef Options
  * @property {string[]} [keys] - Key names of file metadata to render to HTML - can be nested
  * @property {boolean} [wildcard=false] - Expand `*` wildcards in keypaths
+ * @property {Render} [render] - Specify a custom render function with the signature `(source, engineOptions, context) => string`.
+ * `context` is an object with a `path` key containing the current file path, and `key` containing the target key.
  * @property {Object} [engineOptions] Options to pass to the markdown engine (default [marked](https://github.com/markedjs/marked))
  **/
 
 const defaultOptions = {
   keys: [],
   wildcard: false,
+  render: defaultRender,
   engineOptions: {}
 }
 
@@ -65,16 +72,21 @@ function markdown(options = defaultOptions) {
       if ('.' != dir) html = join(dir, html)
 
       debug.info('Rendering file "%s" as "%s"', file, html)
-      const str = marked(data.contents.toString(), options.engineOptions)
+      const str = options.render(data.contents.toString(), options.engineOptions, { path: file, key: 'contents' })
       data.contents = Buffer.from(str)
 
       let keys = options.keys
       if (options.wildcard) {
         keys = expandWildcardKeypaths(data, options.keys, '*')
       }
-      keys.forEach((k) => {
-        debug.info('Rendering key "%s" of file "%s"', k.join ? k.join('.') : k, file)
-        render(data, k, options.engineOptions)
+      keys.forEach((key) => {
+        const value = get(data, key)
+        if (typeof value === 'string') {
+          debug.info('Rendering key "%s" of file "%s"', key.join ? key.join('.') : key, file)
+          set(data, key, options.render(value, options.engineOptions, { path: file, key }))
+        } else {
+          debug.warn('Couldn\'t render key %s of file "%s": not a string', key.join ? key.join('.') : key, file)
+        }
       })
 
       delete files[file]

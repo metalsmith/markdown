@@ -55,12 +55,15 @@
     "marked": "^4.2.4"
   },
   "devDependencies": {
+    "@types/markdown-it": "^12.2.3",
+    "@types/marked": "^4.0.8",
     "assert-dir-equal": "^1.1.0",
     "auto-changelog": "^2.4.0",
     "eslint": "^8.30.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.6.0",
+    "markdown-it": "^13.0.1",
     "metalsmith": "^2.5.0",
     "microbundle": "^0.15.1",
     "mocha": "^9.2.2",

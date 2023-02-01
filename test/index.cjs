@@ -4,8 +4,10 @@ const assert = require('assert')
 const equal = require('assert-dir-equal')
 const Metalsmith = require('metalsmith')
 const { name } = require('../package.json')
+/** @type {import('../lib').default} */
 /* eslint-disable-next-line n/no-missing-require */
 const markdown = require('..')
+const markdownIt = require('markdown-it')
 let expandWildcardKeypath
 const path = require('path')
 
@@ -99,6 +101,34 @@ describe('@metalsmith/markdown', function () {
       assert.deepStrictEqual(files, { 'index.css': {} })
       done()
     })
+  })
+
+  it('should allow using any markdown parser through the render option', function (done) {
+    /** @type {import('markdown-it')} */
+    let mdIt 
+    msCommon('test/fixtures/keys')
+      .use(markdown({
+        keys: ['custom'],
+        render(source, opts, context) {
+          if (!mdIt) mdIt = new markdownIt(opts)
+          if (context.key == 'contents') return mdIt.render(source)
+          return mdIt.renderInline(source)
+        }
+      }))
+      .process((err, files) => {
+        if (err) done(err)
+        try {
+          assert.strictEqual(files['index.html'].custom, '<em>a</em>')
+          assert.strictEqual(files['index.html'].contents.toString(), [
+            '<h1>A Markdown Post</h1>\n',
+            '<p>With some &quot;amazing&quot;, <em>riveting</em>, <strong>coooonnnntent</strong>.</p>\n'
+          ].join(''))
+          done()
+        }
+         catch (err) {
+          done(err)
+        }
+      })
   })
 
   it('should allow a "keys" option', function (done) {
