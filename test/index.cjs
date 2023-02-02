@@ -103,6 +103,72 @@ describe('@metalsmith/markdown', function () {
     })
   })
 
+  it('should make globalRefs available to all files', function (done) {
+    msCommon('test/fixtures/globalrefs')
+      .use(markdown({
+        keys: ['frontmatter_w_markdown'],
+        globalRefs:{
+          'core_plugin_layouts': 'https://github.com/metalsmith/layouts',
+          'core_plugin_in-place': 'https://github.com/metalsmith/in-place',
+          'core_plugin_collections': 'https://github.com/metalsmith/collections',
+          'core_plugin_markdown': 'https://github.com/metalsmith/markdown "with title"'
+        }
+      }))
+      .build((err, files) => {
+        if (err) done(err)
+        try {
+          assert.strictEqual(files['index.html'].frontmatter_w_markdown, '<p><a href="https://github.com/metalsmith/markdown" title="with title">markdown</a></p>\n')
+          equal('test/fixtures/globalrefs/build', 'test/fixtures/globalrefs/expected')
+          done()
+        } catch(err) {
+          done(err)
+        }
+      })
+  })
+
+  it('should load globalRefs from a JSON source file', function (done) {
+    msCommon('test/fixtures/globalrefs-meta')
+      .metadata({
+        global: {
+          links: {
+          'core_plugin_layouts': 'https://github.com/metalsmith/layouts',
+          'core_plugin_in-place': 'https://github.com/metalsmith/in-place',
+          'core_plugin_collections': 'https://github.com/metalsmith/collections',
+          'core_plugin_markdown': 'https://github.com/metalsmith/markdown "with title"'
+        }
+        }
+      })
+      .use(markdown({
+        globalRefs: 'global.links'
+      }))
+      .build((err) => {
+        if (err) done(err)
+        try {
+          equal('test/fixtures/globalrefs-meta/build', 'test/fixtures/globalrefs-meta/expected')
+          done()
+        } catch(err) {
+          done(err)
+        }
+      })
+  })
+
+  it('should throw when the globalRefs metadata key is not found', function (done) {
+    msCommon('test/fixtures/globalrefs-meta')
+      .use(markdown({
+        globalRefs: 'not_found'
+      }))
+      .process((err) => {
+        try  {
+          assert(err instanceof Error)
+          assert(err.name, 'Error @metalsmith/markdown')
+          assert(err.message, 'globalRefs not found in metalsmith.metadata().not_found')
+          done()
+        } catch (err) {
+          done(err)
+        }
+      })
+  })
+
   it('should allow using any markdown parser through the render option', function (done) {
     /** @type {import('markdown-it')} */
     let mdIt 
@@ -158,6 +224,36 @@ describe('@metalsmith/markdown', function () {
         if (err) return done(err)
         assert.equal('<h1 id="hello">Hello</h1>\n', files['index.html'].nested.key.path)
         done()
+      })
+  })
+
+  it('should log a warning when a key is not renderable (= not a string)', done => {
+    const ms = msCommon('test/fixtures/default')
+    const output = []
+    const Debugger = () => { }
+    Object.assign(Debugger, {
+      info: () => { },
+      warn: (...args) => { output.push(['warn', ...args]) },
+      error: () => {  }
+    })
+
+    ms
+      .use(() => {
+        ms.debug = () => Debugger
+      })
+      .use(markdown({
+        keys: ['not_a_string']
+      }))
+      .process((err) => {
+        if (err) done(err)
+        try  {
+          assert.deepStrictEqual(output.slice(0,1), [
+            ['warn', 'Couldn\'t render key %s of file "%s": not a string', 'not_a_string', 'index.md']
+          ])
+          done()
+        } catch (err) {
+          done(err)
+        }
       })
   })
 

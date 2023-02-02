@@ -8,6 +8,12 @@ function defaultRender(source, options) {
   return marked(source, options)
 }
 
+function refsObjectToMarkdown(refsObject) {
+  return Object.entries(refsObject)
+    .map(([refname, value]) => `[${refname}]: ${value}`)
+    .join('\n')
+}
+
 /**
  * @callback Render
  * @param {string} source
@@ -19,6 +25,8 @@ function defaultRender(source, options) {
  * @typedef Options
  * @property {string[]} [keys] - Key names of file metadata to render to HTML - can be nested
  * @property {boolean} [wildcard=false] - Expand `*` wildcards in keypaths
+ * @property {string|Object<string, string>} [globalRefs] An object of `{ refname: 'link' }` pairs that will be made available for all markdown files and keys,
+ * or a `metalsmith.metadata()` keypath containing such object
  * @property {Render} [render] - Specify a custom render function with the signature `(source, engineOptions, context) => string`.
  * `context` is an object with a `path` key containing the current file path, and `key` containing the target key.
  * @property {Object} [engineOptions] Options to pass to the markdown engine (default [marked](https://github.com/markedjs/marked))
@@ -28,7 +36,8 @@ const defaultOptions = {
   keys: [],
   wildcard: false,
   render: defaultRender,
-  engineOptions: {}
+  engineOptions: {},
+  globalRefs: {}
 }
 
 /**
@@ -44,8 +53,6 @@ function markdown(options = defaultOptions) {
   }
 
   return function markdown(files, metalsmith, done) {
-    setImmediate(done)
-
     const debug = metalsmith.debug('@metalsmith/markdown')
     const matches = metalsmith.match('**/*.{md,markdown}', Object.keys(files))
 
@@ -65,6 +72,22 @@ function markdown(options = defaultOptions) {
       debug('Processing %s markdown file(s)', matches.length)
     }
 
+    let globalRefsMarkdown = ''
+    if (typeof options.globalRefs === 'string') {
+      const found = get(metalsmith.metadata(), options.globalRefs)
+      if (found) {
+        globalRefsMarkdown = refsObjectToMarkdown(found)
+      } else {
+        const err = new Error(`globalRefs not found in metalsmith.metadata().${options.globalRefs}`)
+        err.name = 'Error @metalsmith/markdown'
+        done(err)
+      }
+    } else if (typeof options.globalRefs === 'object' && options.globalRefs !== null) {
+      globalRefsMarkdown = refsObjectToMarkdown(options.globalRefs)
+    }
+
+    if (globalRefsMarkdown.length) globalRefsMarkdown += '\n\n'
+
     matches.forEach(function (file) {
       const data = files[file]
       const dir = dirname(file)
@@ -72,7 +95,10 @@ function markdown(options = defaultOptions) {
       if ('.' != dir) html = join(dir, html)
 
       debug.info('Rendering file "%s" as "%s"', file, html)
-      const str = options.render(data.contents.toString(), options.engineOptions, { path: file, key: 'contents' })
+      const str = options.render(globalRefsMarkdown + data.contents.toString(), options.engineOptions, {
+        path: file,
+        key: 'contents'
+      })
       data.contents = Buffer.from(str)
 
       let keys = options.keys
@@ -83,7 +109,7 @@ function markdown(options = defaultOptions) {
         const value = get(data, key)
         if (typeof value === 'string') {
           debug.info('Rendering key "%s" of file "%s"', key.join ? key.join('.') : key, file)
-          set(data, key, options.render(value, options.engineOptions, { path: file, key }))
+          set(data, key, options.render(globalRefsMarkdown + value, options.engineOptions, { path: file, key }))
         } else {
           debug.warn('Couldn\'t render key %s of file "%s": not a string', key.join ? key.join('.') : key, file)
         }
@@ -92,6 +118,8 @@ function markdown(options = defaultOptions) {
       delete files[file]
       files[html] = data
     })
+
+    done()
   }
 }
 

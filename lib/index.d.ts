@@ -18,6 +18,11 @@ export type Options<E = marked.MarkedOptions> = {
      */
     wildcard?: boolean;
     /**
+     * An object of `{ refname: 'link' }` pairs that will be  available for all markdown files and keys,
+     * or a `metalsmith.metadata()` keypath containing such object
+     */
+    globalRefs?: { [key:string]: string };
+    /**
      * - Specify a custom render function with the signature `(source, engineOptions, context) => string`.
      * `context` is an object with a `path` key containing the current file path, and `key` containing the target key.
      */

@@ -1,5 +1,6 @@
 import get from 'dlv'
 
+// istanbul ignore next
 function error(name, msg) {
   const err = new Error(msg)
   err.name = name
@@ -32,9 +33,11 @@ function isObject(arg) {
  * @returns {Array<string|number>[]}
  */
 function expandWildcardKeypath(root, keypaths, char) {
+  // istanbul ignore if
   if (!isObject(root)) {
     throw error('EINVALID_ARGUMENT', 'root must be an object or array')
   }
+  // istanbul ignore if
   if (!isArray(keypaths) || keypaths.filter((keypath) => !isString(keypath) && !isArray(keypath)).length) {
     throw error('EINVALID_ARGUMENT', 'keypaths must be strings or arrays of strings')
   }

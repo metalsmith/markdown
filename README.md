@@ -12,6 +12,7 @@ A Metalsmith plugin to render markdown files to HTML, using [Marked](https://git
 
 - Compiles `.md` and `.markdown` files in `metalsmith.source()` to HTML.
 - Enables rendering file metadata keys to HTML through the [keys option](#rendering-file-metadata)
+- Define a dictionary of markdown globalRefs (for links, images) available to all render targets
 - Supports using the markdown library of your choice through the [render option](#using-another-markdown-library)
 
 ## Installation
@@ -70,6 +71,7 @@ metalsmith.use(
 
 - `keys`: Key names of file metadata to render to HTML in addition to its `contents` - can be nested key paths
 - `wildcard` _(default: `false`)_ - Expand `*` wildcards in `keys` option keypaths
+- `globalRefs` - An object of `{ refname: 'link' }` pairs that will be available for all markdown files and keys, or a `metalsmith.metadata()` keypath containing such object
 - `render` - Specify a custom render function with the signature `(source, engineOptions, context) => string`. `context` is an object with the signature `{ path:string, key:string }` where the `path` key contains the current file path, and `key` contains the target metadata key.
 - `engineOptions` Options to pass to the markdown engine (default [marked](https://github.com/markedjs/marked))
 
@@ -133,6 +135,43 @@ would be transformed into:
 - It acts like the single bash globstar. If you specify `*` this would only match the properties at the first level of the metadata.
 - If a wildcard keypath matches a key whose value is not a string, it will be ignored.
 - It is set to `false` by default because it can incur some overhead if it is applied too broadly.
+
+### Defining a dictionary of markdown globalRefs
+
+Markdown allows users to define links in [reference style](https://www.markdownguide.org/basic-syntax/#reference-style-links) (`[]:`).  
+In a Metalsmith build it may be especially desirable to be able to refer to some links globally. The `globalRefs` options allows this:
+
+```js
+metalsmith.use(
+  markdown({
+    globalRefs: {
+      twitter_link: 'https://twitter.com/johndoe',
+      github_link: 'https://github.com/johndoe',
+      photo: '/assets/img/me.png'
+    }
+  })
+)
+```
+
+Now _contents of any file or metadata key_ processed by @metalsmith/markdown will be able to refer to these links as `[My Twitter][twitter_link]` or `![Me][photo]`. You can also store the globalRefs object of the previous example in a `metalsmith.metadata()` key and pass its keypath as `globalRefs` option instead.
+
+This enables a flow where you can load the refs into global metadata from a source file with [@metalsmith/metadata](https://github.com/metalsmith/metadata), and use them both in markdown and templating plugins like [@metalsmith/layouts](https://github.com/metalsmith/layouts):
+
+```js
+metalsith
+  .metadata({
+    global: {
+      links: {
+        twitter: 'https://twitter.com/johndoe',
+        github: 'https://github.com/johndoe'
+      }
+    }
+  })
+  // eg in a markdown file: [My Twitter profile][twitter]
+  .use(markdown({ globalRefs: 'global.links' }))
+  // eg in a handlebars layout: {{ global.links.twitter }}
+  .use(layouts())
+```
 
 ### Custom markdown rendering
 
