@@ -1,6 +1,6 @@
 {
   "name": "@metalsmith/markdown",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "A Metalsmith plugin to render markdown files to HTML",
   "keywords": [
     "markdown",
