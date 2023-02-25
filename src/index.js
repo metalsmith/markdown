@@ -110,7 +110,8 @@ function markdown(options = defaultOptions) {
         if (typeof value === 'string') {
           debug.info('Rendering key "%s" of file "%s"', key.join ? key.join('.') : key, file)
           set(data, key, options.render(globalRefsMarkdown + value, options.engineOptions, { path: file, key }))
-        } else {
+          // log a warning if the key is defined and of an unexpected type, but not if the property simply is not defined
+        } else if (typeof value !== 'undefined') {
           debug.warn('Couldn\'t render key %s of file "%s": not a string', key.join ? key.join('.') : key, file)
         }
       })
