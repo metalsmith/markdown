@@ -48,6 +48,8 @@ function expandWildcardKeypath(root, keypaths, char) {
     if (wildcard > -1) {
       const pre = keypath.slice(0, wildcard)
       const wildcardRoot = get(root, pre)
+
+      if (!wildcardRoot) return result
       const looped = isArray(wildcardRoot) ? wildcardRoot : Object.keys(wildcardRoot)
 
       looped.forEach((entry, index) => {

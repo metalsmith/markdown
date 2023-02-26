@@ -112,7 +112,7 @@ function markdown(options = defaultOptions) {
           set(data, key, options.render(globalRefsMarkdown + value, options.engineOptions, { path: file, key }))
           // log a warning if the key is defined and of an unexpected type, but not if the property simply is not defined
         } else if (typeof value !== 'undefined') {
-          debug.warn('Couldn\'t render key %s of file "%s": not a string', key.join ? key.join('.') : key, file)
+          debug.warn('Couldn\'t render key "%s" of file "%s": not a string', key.join ? key.join('.') : key, file)
         }
       })
 
