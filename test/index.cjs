@@ -85,7 +85,9 @@ describe('@metalsmith/markdown', function () {
     msCommon('test/fixtures/basic')
       .use(
         markdown({
-          smartypants: true
+          engineOptions: {
+            smartypants: true
+          }
         })
       )
       .build(function (err) {
@@ -202,7 +204,9 @@ describe('@metalsmith/markdown', function () {
       .use(
         markdown({
           keys: ['custom'],
-          smartypants: true
+          engineOptions: {
+            smartypants: true
+          }
         })
       )
       .build(function (err, files) {
@@ -217,7 +221,9 @@ describe('@metalsmith/markdown', function () {
       .use(
         markdown({
           keys: ['custom', 'nested.key.path'],
-          smartypants: true
+          engineOptions: {
+            smartypants: true
+          }
         })
       )
       .build(function (err, files) {
@@ -315,7 +321,9 @@ describe('@metalsmith/markdown', function () {
         markdown({
           keys: ['arr.*', 'objarr.*.prop', 'wildcard.faq.*.*', 'wildcard.titles.*'],
           wildcard: '*',
-          smartypants: true
+          engineOptions: {
+            smartypants: true
+          }
         })
       )
       .build(function (err, files) {
