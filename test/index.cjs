@@ -254,7 +254,7 @@ describe('@metalsmith/markdown', function () {
         if (err) done(err)
         try  {
           assert.deepStrictEqual(output.slice(0,1), [
-            ['warn', 'Couldn\'t render key %s of file "%s": not a string', 'not_a_string', 'index.md']
+            ['warn', 'Couldn\'t render key "%s" of file "%s": not a string', 'not_a_string', 'index.md']
           ])
           done()
         } catch (err) {
