@@ -31,7 +31,7 @@
   "type": "module",
   "types": "lib/index.d.ts",
   "files": [
-    "lib/*.js"
+    "lib/*"
   ],
   "directories": {
     "lib": "lib",
@@ -45,7 +45,7 @@
     "lint": "eslint --fix .",
     "lint:check": "eslint --fix-dry-run .",
     "release": "npm run build && release-it .",
-    "build": "microbundle --target node --no-sourcemap -f cjs,esm --generateTypes=false",
+    "build": "microbundle --target node -f cjs,esm --generateTypes=false",
     "test": "nyc mocha",
     "pretest": "npm run build"
   },

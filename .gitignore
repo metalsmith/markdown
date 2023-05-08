@@ -6,4 +6,5 @@ npm-debug.log*
 coverage.info
 test/fixtures/*/build
 lib/*.*js
+lib/*.map
 node_modules
