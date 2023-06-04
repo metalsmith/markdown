@@ -1,15 +1,17 @@
 /* eslint-env node, mocha */
 
-const assert = require('assert')
-const equal = require('assert-dir-equal')
-const Metalsmith = require('metalsmith')
-const { name } = require('../package.json')
-/** @type {import('../lib').default} */
-/* eslint-disable-next-line n/no-missing-require */
-const markdown = require('..')
-const markdownIt = require('markdown-it')
+import assert from 'node:assert'
+import { resolve, dirname, join } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import equal from 'assert-dir-equal'
+import Metalsmith from 'metalsmith'
+import markdownIt from 'markdown-it'
+import markdown from '../src/index.js'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const { name } = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf-8'))
 let expandWildcardKeypath
-const path = require('path')
 
 function msCommon(dir) {
   return Metalsmith(dir).env('DEBUG', process.env.DEBUG)
@@ -17,10 +19,10 @@ function msCommon(dir) {
 
 describe('@metalsmith/markdown', function () {
   before(function (done) {
-    import('../src/expand-wildcard-keypath.js').then(imported => {
+    import('../src/expand-wildcard-keypath.js').then((imported) => {
       expandWildcardKeypath = imported.default
       done()
-    }) 
+    })
   })
   it('should export a named plugin function matching package.json name', function () {
     const namechars = name.split('/')[1]
@@ -42,10 +44,10 @@ describe('@metalsmith/markdown', function () {
   })
 
   it('should treat "true" option as default', function (done) {
-    const filePath = path.join('subfolder', 'index.html')
+    const filePath = join('subfolder', 'index.html')
     function getFiles() {
       return {
-        [path.join('subfolder', 'index.md')]: {
+        [join('subfolder', 'index.md')]: {
           contents: Buffer.from('"hello"')
         }
       }
@@ -107,22 +109,27 @@ describe('@metalsmith/markdown', function () {
 
   it('should make globalRefs available to all files', function (done) {
     msCommon('test/fixtures/globalrefs')
-      .use(markdown({
-        keys: ['frontmatter_w_markdown'],
-        globalRefs:{
-          'core_plugin_layouts': 'https://github.com/metalsmith/layouts',
-          'core_plugin_in-place': 'https://github.com/metalsmith/in-place',
-          'core_plugin_collections': 'https://github.com/metalsmith/collections',
-          'core_plugin_markdown': 'https://github.com/metalsmith/markdown "with title"'
-        }
-      }))
+      .use(
+        markdown({
+          keys: ['frontmatter_w_markdown'],
+          globalRefs: {
+            core_plugin_layouts: 'https://github.com/metalsmith/layouts',
+            'core_plugin_in-place': 'https://github.com/metalsmith/in-place',
+            core_plugin_collections: 'https://github.com/metalsmith/collections',
+            core_plugin_markdown: 'https://github.com/metalsmith/markdown "with title"'
+          }
+        })
+      )
       .build((err, files) => {
         if (err) done(err)
         try {
-          assert.strictEqual(files['index.html'].frontmatter_w_markdown, '<p><a href="https://github.com/metalsmith/markdown" title="with title">markdown</a></p>\n')
+          assert.strictEqual(
+            files['index.html'].frontmatter_w_markdown,
+            '<p><a href="https://github.com/metalsmith/markdown" title="with title">markdown</a></p>\n'
+          )
           equal('test/fixtures/globalrefs/build', 'test/fixtures/globalrefs/expected')
           done()
-        } catch(err) {
+        } catch (err) {
           done(err)
         }
       })
@@ -133,22 +140,24 @@ describe('@metalsmith/markdown', function () {
       .metadata({
         global: {
           links: {
-          'core_plugin_layouts': 'https://github.com/metalsmith/layouts',
-          'core_plugin_in-place': 'https://github.com/metalsmith/in-place',
-          'core_plugin_collections': 'https://github.com/metalsmith/collections',
-          'core_plugin_markdown': 'https://github.com/metalsmith/markdown "with title"'
-        }
+            core_plugin_layouts: 'https://github.com/metalsmith/layouts',
+            'core_plugin_in-place': 'https://github.com/metalsmith/in-place',
+            core_plugin_collections: 'https://github.com/metalsmith/collections',
+            core_plugin_markdown: 'https://github.com/metalsmith/markdown "with title"'
+          }
         }
       })
-      .use(markdown({
-        globalRefs: 'global.links'
-      }))
+      .use(
+        markdown({
+          globalRefs: 'global.links'
+        })
+      )
       .build((err) => {
         if (err) done(err)
         try {
           equal('test/fixtures/globalrefs-meta/build', 'test/fixtures/globalrefs-meta/expected')
           done()
-        } catch(err) {
+        } catch (err) {
           done(err)
         }
       })
@@ -156,11 +165,13 @@ describe('@metalsmith/markdown', function () {
 
   it('should throw when the globalRefs metadata key is not found', function (done) {
     msCommon('test/fixtures/globalrefs-meta')
-      .use(markdown({
-        globalRefs: 'not_found'
-      }))
+      .use(
+        markdown({
+          globalRefs: 'not_found'
+        })
+      )
       .process((err) => {
-        try  {
+        try {
           assert(err instanceof Error)
           assert(err.name, 'Error @metalsmith/markdown')
           assert(err.message, 'globalRefs not found in metalsmith.metadata().not_found')
@@ -173,27 +184,31 @@ describe('@metalsmith/markdown', function () {
 
   it('should allow using any markdown parser through the render option', function (done) {
     /** @type {import('markdown-it')} */
-    let mdIt 
+    let mdIt
     msCommon('test/fixtures/keys')
-      .use(markdown({
-        keys: ['custom'],
-        render(source, opts, context) {
-          if (!mdIt) mdIt = new markdownIt(opts)
-          if (context.key == 'contents') return mdIt.render(source)
-          return mdIt.renderInline(source)
-        }
-      }))
+      .use(
+        markdown({
+          keys: ['custom'],
+          render(source, opts, context) {
+            if (!mdIt) mdIt = new markdownIt(opts)
+            if (context.key == 'contents') return mdIt.render(source)
+            return mdIt.renderInline(source)
+          }
+        })
+      )
       .process((err, files) => {
         if (err) done(err)
         try {
           assert.strictEqual(files['index.html'].custom, '<em>a</em>')
-          assert.strictEqual(files['index.html'].contents.toString(), [
-            '<h1>A Markdown Post</h1>\n',
-            '<p>With some &quot;amazing&quot;, <em>riveting</em>, <strong>coooonnnntent</strong>.</p>\n'
-          ].join(''))
+          assert.strictEqual(
+            files['index.html'].contents.toString(),
+            [
+              '<h1>A Markdown Post</h1>\n',
+              '<p>With some &quot;amazing&quot;, <em>riveting</em>, <strong>coooonnnntent</strong>.</p>\n'
+            ].join('')
+          )
           done()
-        }
-         catch (err) {
+        } catch (err) {
           done(err)
         }
       })
@@ -233,27 +248,30 @@ describe('@metalsmith/markdown', function () {
       })
   })
 
-  it('should log a warning when a key is not renderable (= not a string)', done => {
+  it('should log a warning when a key is not renderable (= not a string)', (done) => {
     const ms = msCommon('test/fixtures/default')
     const output = []
-    const Debugger = () => { }
+    const Debugger = () => {}
     Object.assign(Debugger, {
-      info: () => { },
-      warn: (...args) => { output.push(['warn', ...args]) },
-      error: () => {  }
+      info: () => {},
+      warn: (...args) => {
+        output.push(['warn', ...args])
+      },
+      error: () => {}
     })
 
-    ms
-      .use(() => {
-        ms.debug = () => Debugger
-      })
-      .use(markdown({
-        keys: ['not_a_string']
-      }))
+    ms.use(() => {
+      ms.debug = () => Debugger
+    })
+      .use(
+        markdown({
+          keys: ['not_a_string']
+        })
+      )
       .process((err) => {
         if (err) done(err)
-        try  {
-          assert.deepStrictEqual(output.slice(0,1), [
+        try {
+          assert.deepStrictEqual(output.slice(0, 1), [
             ['warn', 'Couldn\'t render key "%s" of file "%s": not a string', 'not_a_string', 'index.md']
           ])
           done()
@@ -263,30 +281,42 @@ describe('@metalsmith/markdown', function () {
       })
   })
 
-  it('< v2.0.0 should move legacy engine options in object root to options.engineOptions', done => {
+  it('< v2.0.0 should move legacy engine options in object root to options.engineOptions', (done) => {
     const ms = msCommon('test/fixtures/basic')
     const output = []
-    const Debugger = (...args) => { output.push(['log', ...args])}
+    const Debugger = (...args) => {
+      output.push(['log', ...args])
+    }
     Object.assign(Debugger, {
-      info: (...args) => { output.push(['info', ...args]) },
-      warn: (...args) => { output.push(['warn', ...args]) },
-      error: (...args) => { output.push(['error', ...args]) }
+      info: (...args) => {
+        output.push(['info', ...args])
+      },
+      warn: (...args) => {
+        output.push(['warn', ...args])
+      },
+      error: (...args) => {
+        output.push(['error', ...args])
+      }
     })
 
-    ms
-      .use(() => {
-        ms.debug = () => Debugger
-      })
-      .use(markdown({
-        gfm: true,
-        smartypants: false,
-        engineOptions: {}
-      }))
+    ms.use(() => {
+      ms.debug = () => Debugger
+    })
+      .use(
+        markdown({
+          gfm: true,
+          smartypants: false,
+          engineOptions: {}
+        })
+      )
       .process((err) => {
         if (err) done(err)
-        try  {
-          assert.deepStrictEqual(output.slice(0,2), [
-            ['warn', 'Starting from version 2.0 marked engine options will need to be specified as options.engineOptions'],
+        try {
+          assert.deepStrictEqual(output.slice(0, 2), [
+            [
+              'warn',
+              'Starting from version 2.0 marked engine options will need to be specified as options.engineOptions'
+            ],
             ['warn', 'Moved engine options %s to options.engineOptions', 'gfm, smartypants']
           ])
           done()
@@ -294,7 +324,6 @@ describe('@metalsmith/markdown', function () {
           done(err)
         }
       })
-
   })
 
   it('expandWildCardKeyPath should throw if root is not an object', function () {
