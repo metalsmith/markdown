@@ -14,3 +14,4 @@ rules:
   no-var: error
   no-use-before-define: error
   no-await-in-loop: error
+  'import/namespace': off
