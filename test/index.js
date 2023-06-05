@@ -272,7 +272,7 @@ describe('@metalsmith/markdown', function () {
         if (err) done(err)
         try {
           assert.deepStrictEqual(output.slice(0, 1), [
-            ['warn', 'Couldn\'t render key "%s" of file "%s": not a string', 'not_a_string', 'index.md']
+            ['warn', 'Couldn\'t render key "%s" of target "%s": not a string', 'not_a_string', 'index.md']
           ])
           done()
         } catch (err) {
@@ -319,6 +319,37 @@ describe('@metalsmith/markdown', function () {
             ],
             ['warn', 'Moved engine options %s to options.engineOptions', 'gfm, smartypants']
           ])
+          done()
+        } catch (err) {
+          done(err)
+        }
+      })
+  })
+
+  it('should render keys in metalsmith.metadata()', function (done) {
+    const ms = msCommon('test/fixtures/basic')
+    ms.env('DEBUG', '@metalsmith/mardown*')
+      .metadata({
+        markdownRefs: {
+          defined_link: 'https://globalref.io'
+        },
+        has_markdown: '**[globalref_link][defined_link]**'
+      })
+      .use(
+        markdown({
+          keys: {
+            global: ['has_markdown']
+          },
+          globalRefs: 'markdownRefs'
+        })
+      )
+      .process((err) => {
+        if (err) done(err)
+        try {
+          assert.strictEqual(
+            ms.metadata().has_markdown,
+            '<p><strong><a href="https://globalref.io">globalref_link</a></strong></p>\n'
+          )
           done()
         } catch (err) {
           done(err)

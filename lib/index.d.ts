@@ -10,11 +10,15 @@ export type Render<E> = (source: string, engineOptions: EngineOptions<E>, contex
 
 export type Options<E = marked.MarkedOptions> = {
     /**
-     * - Key names of file metadata to render to HTML - can be nested
+     * - Array of file metadata key names or object with arrays of key names of file or global metadata key names to render to HTML - can be nested keypaths
      */
-    keys?: string[];
+    keys?: string[] | {
+      files: string[]
+      global: string[]
+    };
     /**
      * - Expand `*` wildcards in keypaths
+     * @default false
      */
     wildcard?: boolean;
     /**

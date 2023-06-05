@@ -11,7 +11,7 @@ A Metalsmith plugin to render markdown files to HTML, using [Marked](https://git
 ## Features
 
 - Compiles `.md` and `.markdown` files in `metalsmith.source()` to HTML.
-- Enables rendering file metadata keys to HTML through the [keys option](#rendering-file-metadata)
+- Enables rendering file or metalsmith metadata keys to HTML through the [keys option](#rendering-metadata)
 - Define a dictionary of markdown globalRefs (for links, images) available to all render targets
 - Supports using the markdown library of your choice through the [render option](#using-another-markdown-library)
 
@@ -75,17 +75,28 @@ metalsmith.use(
 - `render` - Specify a custom render function with the signature `(source, engineOptions, context) => string`. `context` is an object with the signature `{ path:string, key:string }` where the `path` key contains the current file path, and `key` contains the target metadata key.
 - `engineOptions` Options to pass to the markdown engine (default [marked](https://github.com/markedjs/marked))
 
-### Rendering file metadata
+### Rendering metadata
 
-You can render markdown to HTML in file metadata keys by specifying the `keys` option.  
-The `keys` option also supports dot-delimited key-paths.
+You can render markdown to HTML in file or metalsmith metadata keys by specifying the `keys` option.  
+The `keys` option also supports dot-delimited key-paths. You can also use [globalRefs within them](#defining-a-dictionary-of-markdown-globalrefs)
 
 ```js
-metalsmith.use(
-  markdown({
-    keys: ['html_desc', 'nested.data']
+metalsmith
+  .metadata({
+    from_metalsmith_metadata: 'I _shall_ become **markdown** and can even use a [globalref][globalref_link]',
+    markdownRefs: {
+      globalref_link: 'https://johndoe.com'
+    }
   })
-)
+  .use(
+    markdown({
+      keys: {
+        files: ['html_desc', 'nested.data'],
+        global: ['from_metalsmith_metadata']
+      },
+      globalRefs: 'markdownRefs'
+    })
+  )
 ```
 
 You can even render all keys at a certain path by setting the `wildcard` option and using a globstar `*` in the keypaths.  
@@ -170,7 +181,7 @@ metalsith
   // eg in a markdown file: [My Twitter profile][twitter]
   .use(markdown({ globalRefs: 'global.links' }))
   // eg in a handlebars layout: {{ global.links.twitter }}
-  .use(layouts())
+  .use(layouts({ pattern: '**/*.html' }))
 ```
 
 ### Custom markdown rendering

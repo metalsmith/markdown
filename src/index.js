@@ -23,7 +23,7 @@ function refsObjectToMarkdown(refsObject) {
 
 /**
  * @typedef Options
- * @property {string[]} [keys] - Key names of file metadata to render to HTML - can be nested
+ * @property {string[]|{files: string[], global: string[]}} [keys] - Key names of file metadata to render to HTML - can be nested
  * @property {boolean} [wildcard=false] - Expand `*` wildcards in keypaths
  * @property {string|Object<string, string>} [globalRefs] An object of `{ refname: 'link' }` pairs that will be made available for all markdown files and keys,
  * or a `metalsmith.metadata()` keypath containing such object
@@ -33,7 +33,7 @@ function refsObjectToMarkdown(refsObject) {
  **/
 
 const defaultOptions = {
-  keys: [],
+  keys: {},
   wildcard: false,
   render: defaultRender,
   engineOptions: {},
@@ -52,9 +52,30 @@ function markdown(options = defaultOptions) {
     options = Object.assign({}, defaultOptions, options)
   }
 
+  if (Array.isArray(options.keys)) {
+    options.keys = { files: options.keys }
+  }
+
   return function markdown(files, metalsmith, done) {
     const debug = metalsmith.debug('@metalsmith/markdown')
     const matches = metalsmith.match('**/*.{md,markdown}', Object.keys(files))
+
+    function renderKeys(keys, prepend, target, path) {
+      if (options.wildcard) {
+        keys = expandWildcardKeypaths(target, keys, '*')
+      }
+
+      keys.forEach((key) => {
+        const value = get(target, key)
+        if (typeof value === 'string') {
+          const context = path === 'metalsmith.metadata()' ? { key } : { path, key }
+          debug.info('Rendering key "%s" of target "%s"', key.join ? key.join('.') : key, path)
+          set(target, key, options.render(prepend + value, options.engineOptions, context))
+        } else if (typeof value !== 'undefined') {
+          debug.warn('Couldn\'t render key "%s" of target "%s": not a string', key.join ? key.join('.') : key, path)
+        }
+      })
+    }
 
     const legacyEngineOptions = Object.keys(options).filter((opt) => !Object.keys(defaultOptions).includes(opt))
     if (legacyEngineOptions.length) {
@@ -101,24 +122,18 @@ function markdown(options = defaultOptions) {
       })
       data.contents = Buffer.from(str)
 
-      let keys = options.keys
-      if (options.wildcard) {
-        keys = expandWildcardKeypaths(data, options.keys, '*')
-      }
-      keys.forEach((key) => {
-        const value = get(data, key)
-        if (typeof value === 'string') {
-          debug.info('Rendering key "%s" of file "%s"', key.join ? key.join('.') : key, file)
-          set(data, key, options.render(globalRefsMarkdown + value, options.engineOptions, { path: file, key }))
-          // log a warning if the key is defined and of an unexpected type, but not if the property simply is not defined
-        } else if (typeof value !== 'undefined') {
-          debug.warn('Couldn\'t render key "%s" of file "%s": not a string', key.join ? key.join('.') : key, file)
-        }
-      })
+      const keys = options.keys && options.keys.files ? options.keys.files : []
+      renderKeys(keys, globalRefsMarkdown, data, file)
 
       delete files[file]
       files[html] = data
     })
+
+    if (options.keys && options.keys.global) {
+      debug.info('Processing metalsmith.metadata()')
+      const meta = metalsmith.metadata()
+      renderKeys(options.keys.global, globalRefsMarkdown, meta, 'metalsmith.metadata()')
+    }
 
     done()
   }
