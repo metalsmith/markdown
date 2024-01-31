@@ -6,8 +6,10 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import equal from 'assert-dir-equal'
 import Metalsmith from 'metalsmith'
+import { markedSmartypantsLite } from 'marked-smartypants-lite'
 import markdownIt from 'markdown-it'
 import markdown from '../src/index.js'
+import { gfmHeadingId } from 'marked-gfm-heading-id'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const { name } = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf-8'))
@@ -68,7 +70,7 @@ describe('@metalsmith/markdown', function () {
       }),
       new Promise((resolve) => {
         const files = getFiles()
-        markdown({ smartypants: true })(files, msCommon(__dirname), () => {
+        markdown({ engineOptions: { use: [markedSmartypantsLite()] } })(files, msCommon(__dirname), () => {
           resolve(files)
         })
       })
@@ -83,20 +85,11 @@ describe('@metalsmith/markdown', function () {
       })
   })
 
-  it('should convert markdown files', function (done) {
-    msCommon('test/fixtures/basic')
-      .use(
-        markdown({
-          engineOptions: {
-            smartypants: true
-          }
-        })
-      )
-      .build(function (err) {
-        if (err) return done(err)
-        equal('test/fixtures/basic/expected', 'test/fixtures/basic/build')
-        done()
-      })
+  it('should convert markdown files', async function () {
+    await msCommon('test/fixtures/basic')
+      .use(markdown({ engineOptions: { use: [markedSmartypantsLite(), gfmHeadingId()] } }))
+      .build()
+    equal('test/fixtures/basic/build', 'test/fixtures/basic/expected')
   })
 
   it('should skip non-markdown files', function (done) {
@@ -231,21 +224,16 @@ describe('@metalsmith/markdown', function () {
       })
   })
 
-  it('should parse nested key paths', function (done) {
-    msCommon('test/fixtures/nested-keys')
+  it('should parse nested key paths', async function () {
+    const files = await msCommon('test/fixtures/nested-keys')
       .use(
         markdown({
           keys: ['custom', 'nested.key.path'],
-          engineOptions: {
-            smartypants: true
-          }
+          engineOptions: { use: [markedSmartypantsLite(), gfmHeadingId()] }
         })
       )
-      .build(function (err, files) {
-        if (err) return done(err)
-        assert.equal('<h1 id="hello">Hello</h1>\n', files['index.html'].nested.key.path)
-        done()
-      })
+      .build()
+    assert.equal(files['index.html'].nested.key.path, '<h1 id="hello">Hello</h1>\n')
   })
 
   it('should log a warning when a key is not renderable (= not a string)', (done) => {
@@ -381,9 +369,7 @@ describe('@metalsmith/markdown', function () {
         markdown({
           keys: ['arr.*', 'objarr.*.prop', 'wildcard.faq.*.*', 'wildcard.titles.*'],
           wildcard: '*',
-          engineOptions: {
-            smartypants: true
-          }
+          engineOptions: { use: [markedSmartypantsLite(), gfmHeadingId()] }
         })
       )
       .build(function (err, files) {

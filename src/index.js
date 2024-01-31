@@ -1,12 +1,12 @@
 import { basename, dirname, extname, join } from 'path'
+
+import { Marked } from 'marked'
+import { gfmHeadingId } from 'marked-gfm-heading-id'
+import { mangle } from 'marked-mangle'
+
 import get from 'dlv'
 import { dset as set } from 'dset'
-import { marked } from 'marked'
 import expandWildcardKeypaths from './expand-wildcard-keypath.js'
-
-function defaultRender(source, options) {
-  return marked(source, options)
-}
 
 function refsObjectToMarkdown(refsObject) {
   return Object.entries(refsObject)
@@ -14,12 +14,17 @@ function refsObjectToMarkdown(refsObject) {
     .join('\n')
 }
 
+let markedInstance
+
 /**
  * @callback Render
  * @param {string} source
  * @param {Object} engineOptions
  * @param {{ path: string, key: string}} context
  */
+function defaultRender(source, options) {
+  return markedInstance.parse(source, options)
+}
 
 /**
  * @typedef Options
@@ -36,7 +41,13 @@ const defaultOptions = {
   keys: {},
   wildcard: false,
   render: defaultRender,
-  engineOptions: {},
+  engineOptions: {
+    use: [
+      // pre-marked 5.x these were included by default
+      gfmHeadingId(),
+      mangle()
+    ]
+  },
   globalRefs: {}
 }
 
@@ -54,6 +65,13 @@ function markdown(options = defaultOptions) {
 
   if (Array.isArray(options.keys)) {
     options.keys = { files: options.keys }
+  }
+
+  if (options.render === defaultOptions.render) {
+    const { use, ...engineOptions } = options.engineOptions
+    // extensions can be an array of MarkedExtension or an object of { extension-name: args }
+    markedInstance = new Marked(engineOptions)
+    if (use) use.forEach((ext) => markedInstance.use(ext))
   }
 
   return function markdown(files, metalsmith, done) {
