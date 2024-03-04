@@ -1,11 +1,23 @@
 import { basename, dirname, extname, join } from 'path'
 import get from 'dlv'
 import { dset as set } from 'dset'
-import { marked } from 'marked'
+import { unified } from 'unified'
+import remarkGfm from 'remark-gfm'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import remarkSmartypants from 'remark-smartypants'
+import rehypeStringify from 'rehype-stringify'
+import rehypeSlug from 'rehype-slug'
 import expandWildcardKeypaths from './expand-wildcard-keypath.js'
-
+/*
+const remarkExtMap = {
+  smartypants: remarkSmartypants,
+  gfm: remarkGfm
+}*/
 function defaultRender(source, options) {
-  return marked(source, options)
+  const remark = unified().use(remarkParse).use(remarkGfm).use(remarkRehype).use(rehypeSlug).use(rehypeStringify)
+  if (options.smartypants) remark.use(remarkSmartypants)
+  return remark.processSync(source).toString()
 }
 
 function refsObjectToMarkdown(refsObject) {

@@ -17,6 +17,15 @@ function msCommon(dir) {
   return Metalsmith(dir).env('DEBUG', process.env.DEBUG)
 }
 
+function fixture(dir) {
+  dir = resolve(__dirname, 'fixtures', dir)
+  return {
+    dir,
+    expected: resolve(dir, 'expected'),
+    actual: resolve(dir, 'build')
+  }
+}
+
 describe('@metalsmith/markdown', function () {
   before(function (done) {
     import('../src/expand-wildcard-keypath.js').then((imported) => {
@@ -33,14 +42,11 @@ describe('@metalsmith/markdown', function () {
     assert.strictEqual(markdown().name, camelCased)
   })
 
-  it('should not crash the metalsmith build when using default options', function (done) {
-    msCommon('test/fixtures/default')
-      .use(markdown())
-      .build((err) => {
-        assert.strictEqual(err, null)
-        equal('test/fixtures/default/build', 'test/fixtures/default/expected')
-        done()
-      })
+  it('should not crash the metalsmith build when using default options', async function () {
+    const { dir, actual, expected } = fixture('default')
+    const files = await msCommon(dir).use(markdown()).build()
+    equal(actual, expected)
+    return files
   })
 
   it('should treat "true" option as default', function (done) {
@@ -83,8 +89,9 @@ describe('@metalsmith/markdown', function () {
       })
   })
 
-  it('should convert markdown files', function (done) {
-    msCommon('test/fixtures/basic')
+  it('should convert markdown files', async function () {
+    const { dir, actual, expected } = fixture('basic')
+    const files = await msCommon(dir)
       .use(
         markdown({
           engineOptions: {
@@ -92,11 +99,9 @@ describe('@metalsmith/markdown', function () {
           }
         })
       )
-      .build(function (err) {
-        if (err) return done(err)
-        equal('test/fixtures/basic/expected', 'test/fixtures/basic/build')
-        done()
-      })
+      .build()
+    equal(actual, expected)
+    return files
   })
 
   it('should skip non-markdown files', function (done) {
@@ -107,8 +112,9 @@ describe('@metalsmith/markdown', function () {
     })
   })
 
-  it('should make globalRefs available to all files', function (done) {
-    msCommon('test/fixtures/globalrefs')
+  it('should make globalRefs available to all files', async function () {
+    const { dir, actual, expected } = fixture('globalrefs')
+    const files = await msCommon(dir)
       .use(
         markdown({
           keys: ['frontmatter_w_markdown'],
@@ -120,23 +126,19 @@ describe('@metalsmith/markdown', function () {
           }
         })
       )
-      .build((err, files) => {
-        if (err) done(err)
-        try {
-          assert.strictEqual(
-            files['index.html'].frontmatter_w_markdown,
-            '<p><a href="https://github.com/metalsmith/markdown" title="with title">markdown</a></p>\n'
-          )
-          equal('test/fixtures/globalrefs/build', 'test/fixtures/globalrefs/expected')
-          done()
-        } catch (err) {
-          done(err)
-        }
-      })
+      .build()
+
+    assert.strictEqual(
+      files['index.html'].frontmatter_w_markdown,
+      '<p><a href="https://github.com/metalsmith/markdown" title="with title">markdown</a></p>'
+    )
+    equal(actual, expected)
+    return files
   })
 
-  it('should load globalRefs from a JSON source file', function (done) {
-    msCommon('test/fixtures/globalrefs-meta')
+  it('should load globalRefs from a JSON source file', async function () {
+    const { dir, actual, expected } = fixture('globalrefs-meta')
+    const files = await msCommon(dir)
       .metadata({
         global: {
           links: {
@@ -152,34 +154,25 @@ describe('@metalsmith/markdown', function () {
           globalRefs: 'global.links'
         })
       )
-      .build((err) => {
-        if (err) done(err)
-        try {
-          equal('test/fixtures/globalrefs-meta/build', 'test/fixtures/globalrefs-meta/expected')
-          done()
-        } catch (err) {
-          done(err)
-        }
-      })
+      .build()
+    equal(actual, expected)
+    return files
   })
 
-  it('should throw when the globalRefs metadata key is not found', function (done) {
-    msCommon('test/fixtures/globalrefs-meta')
-      .use(
-        markdown({
-          globalRefs: 'not_found'
-        })
-      )
-      .process((err) => {
-        try {
-          assert(err instanceof Error)
-          assert(err.name, 'Error @metalsmith/markdown')
-          assert(err.message, 'globalRefs not found in metalsmith.metadata().not_found')
-          done()
-        } catch (err) {
-          done(err)
-        }
-      })
+  it('should throw when the globalRefs metadata key is not found', async function () {
+    try {
+      const files = await msCommon('test/fixtures/globalrefs-meta')
+        .use(
+          markdown({
+            globalRefs: 'not_found'
+          })
+        )
+        .process()
+      return files
+    } catch (err) {
+      assert(err.name, 'Error @metalsmith/markdown')
+      assert(err.message, 'globalRefs not found in metalsmith.metadata().not_found')
+    }
   })
 
   it('should allow using any markdown parser through the render option', function (done) {
@@ -214,8 +207,9 @@ describe('@metalsmith/markdown', function () {
       })
   })
 
-  it('should allow a "keys" option', function (done) {
-    msCommon('test/fixtures/keys')
+  it('should allow a "keys" option', async function () {
+    const { dir } = fixture('keys')
+    const files = await msCommon(dir)
       .use(
         markdown({
           keys: ['custom'],
@@ -224,15 +218,13 @@ describe('@metalsmith/markdown', function () {
           }
         })
       )
-      .build(function (err, files) {
-        if (err) return done(err)
-        assert.equal('<p><em>a</em></p>\n', files['index.html'].custom)
-        done()
-      })
+      .build()
+    assert.strictEqual('<p><em>a</em></p>', files['index.html'].custom)
   })
 
-  it('should parse nested key paths', function (done) {
-    msCommon('test/fixtures/nested-keys')
+  it('should parse nested key paths', async function () {
+    const { dir } = fixture('nested-keys')
+    const files = await msCommon(dir)
       .use(
         markdown({
           keys: ['custom', 'nested.key.path'],
@@ -241,11 +233,8 @@ describe('@metalsmith/markdown', function () {
           }
         })
       )
-      .build(function (err, files) {
-        if (err) return done(err)
-        assert.equal('<h1 id="hello">Hello</h1>\n', files['index.html'].nested.key.path)
-        done()
-      })
+      .build()
+    assert.strictEqual(files['index.html'].nested.key.path, '<h1 id="hello">Hello</h1>')
   })
 
   it('should log a warning when a key is not renderable (= not a string)', (done) => {
@@ -348,7 +337,7 @@ describe('@metalsmith/markdown', function () {
         try {
           assert.strictEqual(
             ms.metadata().has_markdown,
-            '<p><strong><a href="https://globalref.io">globalref_link</a></strong></p>\n'
+            '<p><strong><a href="https://globalref.io">globalref_link</a></strong></p>'
           )
           done()
         } catch (err) {
@@ -375,8 +364,9 @@ describe('@metalsmith/markdown', function () {
     }
   })
 
-  it('should recognize a keys option loop placeholder', function (done) {
-    msCommon('test/fixtures/array-index-keys')
+  it('should recognize a keys option loop placeholder', async function () {
+    const { dir } = fixture('array-index-keys')
+    const files = await msCommon(dir)
       .use(
         markdown({
           keys: ['arr.*', 'objarr.*.prop', 'wildcard.faq.*.*', 'wildcard.titles.*'],
@@ -386,29 +376,26 @@ describe('@metalsmith/markdown', function () {
           }
         })
       )
-      .build(function (err, files) {
-        if (err) return done(err)
-        const expectedFlat = ['<p><em>one</em></p>\n', '<p><em>two</em></p>\n', '<p><em>three</em></p>\n']
-        const expected = [
-          { prop: '<p><em>one</em></p>\n' },
-          { prop: '<p><em>two</em></p>\n' },
-          { prop: '<p><strong>three</strong></p>\n' }
-        ]
-        const expectedWildcards = {
-          faq: [
-            { q: '<p><strong>Question1?</strong></p>\n', a: '<p><em>answer1</em></p>\n' },
-            { q: '<p><strong>Question2?</strong></p>\n', a: '<p><em>answer2</em></p>\n' }
-          ],
-          titles: {
-            first: '<h1 id="first">first</h1>\n',
-            second: '<h2 id="second">second</h2>\n',
-            third: null
-          }
-        }
-        assert.deepStrictEqual(files['index.html'].objarr, expected)
-        assert.deepStrictEqual(files['index.html'].arr, expectedFlat)
-        assert.deepStrictEqual(files['index.html'].wildcard, expectedWildcards)
-        done()
-      })
+      .build()
+    const expectedFlat = ['<p><em>one</em></p>', '<p><em>two</em></p>', '<p><em>three</em></p>']
+    const expected = [
+      { prop: '<p><em>one</em></p>' },
+      { prop: '<p><em>two</em></p>' },
+      { prop: '<p><strong>three</strong></p>' }
+    ]
+    const expectedWildcards = {
+      faq: [
+        { q: '<p><strong>Question1?</strong></p>', a: '<p><em>answer1</em></p>' },
+        { q: '<p><strong>Question2?</strong></p>', a: '<p><em>answer2</em></p>' }
+      ],
+      titles: {
+        first: '<h1 id="first">first</h1>',
+        second: '<h2 id="second">second</h2>',
+        third: null
+      }
+    }
+    assert.deepStrictEqual(files['index.html'].objarr, expected)
+    assert.deepStrictEqual(files['index.html'].arr, expectedFlat)
+    assert.deepStrictEqual(files['index.html'].wildcard, expectedWildcards)
   })
 })
