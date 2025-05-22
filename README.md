@@ -227,12 +227,12 @@ If you don't want to use marked, you can use another markdown rendering library 
 ```js
 import MarkdownIt from 'markdown-it'
 
-let markdownIt
+let markdownItInstance
 metalsmith.use(markdown({
   render(source, opts, context) {
-    if (!markdownIt) markdownIt = new MarkdownIt(opts)
-    if (context.key == 'contents') return mdIt.render(source)
-    return markdownIt.renderInline(source)
+    if (!markdownItInstance) markdownItInstance = new MarkdownIt(opts)
+    if (context.key == 'contents') return markdownItInstance.render(source)
+    return markdownItInstance.renderInline(source)
   },
   // specify markdownIt options here
   engineOptions: { ... }
